@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Atlas del Censo 2024 para los municipios de Cochabamba: población, educación, salud, vivienda y servicios básicos por barrio, zona, calle y manzano.">
+<style>body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px}[hidden]{display:none!important}</style>
+<title>Atlas Censo Cochabamba</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: none;
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: none;
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: none;
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+/* Layout: controles a la izquierda; mapa a la derecha con la ficha de la zona flotando sobre él. En teléfono: mapa, ficha y controles apilados. */
+:root{
+  --bg:#f3f5f2; --panel:#ffffff; --fg:#1b2420; --muted:#5d6b64; --line:#dde3de;
+  --accent:#0f7a54; --accent-soft:#e2f1ea; --block:#c9d1cb; --mapbg:#e9ede9;
+  --up:#0f7a54; --down:#b4472a; --bar:#9fb3a8; --comp:#c8325a; --sel:#2563c9;
+  --water:#a9cbe0; --river:#6fa3c8; --green:#cfe3c4; --wood:#bcd6ae; --agro:#e6e8d3; --minor:#b9c1bb; --rail:#8a8f8c; --aero:#dcdcd6;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-data:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111614; --panel:#171e1b; --fg:#e4ebe7; --muted:#97a69e; --line:#2a3430;
+  --accent:#3fc08c; --accent-soft:#1b3328; --block:#35413b; --mapbg:#141a17;
+  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; --sel:#7fb0ff;
+  --water:#1d3a4d; --river:#2f6587; --green:#1e3326; --wood:#1b2e21; --agro:#1f241c; --minor:#3a4540; --rail:#5c6460; --aero:#262a27; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111614; --panel:#171e1b; --fg:#e4ebe7; --muted:#97a69e; --line:#2a3430;
+  --accent:#3fc08c; --accent-soft:#1b3328; --block:#35413b; --mapbg:#141a17;
+  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; --sel:#7fb0ff;
+  --water:#1d3a4d; --river:#2f6587; --green:#1e3326; --wood:#1b2e21; --agro:#1f241c; --minor:#3a4540; --rail:#5c6460; --aero:#262a27; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
+.app{display:grid;grid-template-columns:340px 1fr;height:100%}
+aside{grid-column:1;grid-row:1;background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;
+  padding-block:20px 28px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:18px;display:flex;flex-direction:column;gap:22px;min-width:0}
+.mapwrap{grid-column:2;grid-row:1;position:relative;min-width:0}
+#map{position:absolute;inset:0;background:var(--mapbg)}
+.leaflet-container{background:var(--mapbg);font-family:var(--f-body)}
+.leaflet-heatmap-layer{pointer-events:none}
+.eyebrow{font-family:var(--f-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:800;font-size:23px;line-height:1.15;margin:4px 0 6px;text-wrap:balance}
+p.lead{margin:0;color:var(--muted);font-size:13.5px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.kpi b{display:block;font-family:var(--f-data);font-weight:500;font-size:15px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:11.5px;color:var(--muted)}
+h2{font-family:var(--f-display);font-weight:700;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}
+.biz{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.biz button{font:inherit;font-size:12.5px;text-align:left;padding:8px 8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
+.biz button:hover{border-color:var(--accent)}
+.biz button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel);font-weight:600}
+.weights{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.wl{display:grid;grid-template-columns:1fr 92px 26px;gap:8px;align-items:center;font-size:12.5px}
+.wl span.n{font-family:var(--f-data);font-size:11.5px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.wl small{color:var(--down)}
+.linkbtn{font:inherit;font-size:12px;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;justify-self:start;margin-top:4px}
+.seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:12.5px;padding:8px 4px;border:0;background:var(--panel);color:var(--fg);cursor:pointer}
+.wrow2{display:flex;justify-content:space-between;gap:6px;font-family:var(--f-data);font-size:11px;color:var(--muted)}
+.wrow2 b{color:var(--fg);font-weight:500}
+.chk{display:flex;align-items:center;gap:8px;font-size:12.5px;margin-top:10px;cursor:pointer}
+.chk i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--comp);border:1.5px solid var(--panel);box-shadow:0 0 0 1px var(--comp)}
+.chk span{color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+button:focus-visible,select:focus-visible,input:focus-visible,li:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label.f{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
+select{width:100%;font:inherit;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+.legend{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.ramp{height:10px;border-radius:3px}
+.legend .ends{display:flex;justify-content:space-between;font-family:var(--f-data);font-size:11px;color:var(--muted)}
+ol.rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;counter-reset:r}
+ol.rank li{display:grid;grid-template-columns:20px 1fr auto;gap:8px;align-items:center;padding:6px 8px;border-radius:6px;cursor:pointer;counter-increment:r}
+ol.rank li::before{content:counter(r);font-family:var(--f-data);font-size:11.5px;color:var(--muted)}
+ol.rank li:hover{background:var(--accent-soft)}
+ol.rank .d{font-size:12.5px;min-width:0}
+ol.rank .d small{display:block;color:var(--muted);font-size:11.5px}
+ol.rank .s{font-family:var(--f-data);font-weight:500;color:var(--accent);font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.note p{margin:0 0 8px}
+.note strong{color:var(--fg)}
+
+/* Ficha de la zona */
+.ficha{position:absolute;top:12px;right:max(12px,env(safe-area-inset-right,0px));z-index:800;width:330px;max-height:calc(100% - 24px);overflow-y:auto;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 24px rgb(0 0 0 / .14);padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px}
+.fh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fh .t{font-family:var(--f-display);font-weight:700;font-size:16px;line-height:1.2}
+.fh .sub{font-family:var(--f-data);font-size:11px;color:var(--muted)}
+.pin{font-family:var(--f-data);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;background:var(--accent-soft);color:var(--accent);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.xbtn{font:inherit;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:6px;width:28px;height:28px;cursor:pointer;flex:none}
+.hint{font-size:12px;color:var(--muted);margin:0}
+.fs h3{font-family:var(--f-data);font-weight:500;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.big{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.big div{display:flex;flex-direction:column}
+.big b{font-family:var(--f-data);font-weight:500;font-size:18px;font-variant-numeric:tabular-nums}
+.big span{font-size:11.5px;color:var(--muted)}
+.pyr{display:grid;grid-template-columns:1fr 46px 1fr;gap:3px 6px;align-items:center;font-size:11px;font-family:var(--f-data)}
+.pyr .l{display:flex;justify-content:flex-end}
+.pyr .lab{text-align:center;color:var(--muted)}
+.pyr i{display:block;height:11px;border-radius:2px;background:var(--bar)}
+.pyr .r i{background:var(--accent)}
+.pyrk{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+.stack{display:flex;height:12px;border-radius:3px;overflow:hidden}
+.stackk{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:11px;color:var(--muted);margin-top:4px}
+.stackk i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
+table.ind{width:100%;border-collapse:collapse;font-size:12.5px}
+table.ind td{padding:3px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+table.ind tr:last-child td{border-bottom:0}
+table.ind td.v{text-align:right;font-family:var(--f-data);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:8px}
+table.ind td.c{text-align:right;width:64px;font-family:var(--f-data);font-size:11px;white-space:nowrap;padding-left:6px}
+.up{color:var(--up)} .down{color:var(--down)} .eq{color:var(--muted)}
+.sc{display:grid;grid-template-columns:96px 1fr 30px;gap:6px;align-items:center;font-size:12px}
+.sc .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.sc .bar i{display:block;height:100%;background:var(--bar)}
+.sc.on{font-weight:600} .sc.on .bar i{background:var(--accent)}
+.sc span.n{font-family:var(--f-data);text-align:right;font-variant-numeric:tabular-nums}
+.scs{display:flex;flex-direction:column;gap:4px}
+.lbl{white-space:nowrap;pointer-events:none;color:var(--fg);text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 2px var(--bg);transform:translate(-50%,-50%)}
+.lbl-r{font-family:var(--f-body);font-style:italic;font-size:11px;opacity:.85}
+.lbl-r.t{font-weight:600;font-size:11.5px}
+.lbl-b{font-family:var(--f-data);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.lbl-l{font-family:var(--f-body);font-weight:600;font-size:11.5px;display:flex;align-items:center;gap:4px;transform:translate(-7px,-50%)}
+.lbl-l i{flex:none;width:14px;height:14px;border-radius:50%;background:var(--panel);border:1.5px solid var(--fg);font-style:normal;font-size:8.5px;line-height:11px;text-align:center;font-family:var(--f-data);font-weight:500}
+.leaflet-div-icon{background:none;border:0}
+@keyframes hlp{0%{stroke-width:10px}100%{stroke-width:3px}}
+path.pulse{animation:hlp .7s ease-out 2}
+.leaflet-tooltip.tipn{background:var(--panel);color:var(--fg);border:1px solid var(--line);box-shadow:0 2px 8px rgb(0 0 0 / .15);font-family:var(--f-body);font-size:12.5px;font-weight:600;padding:3px 8px}
+.leaflet-tooltip.tipn::before{display:none}
+.search{position:relative}
+.search input{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg)}
+.search .msg{font-size:12px;color:var(--muted);margin-top:4px;min-height:1em}
+.zchip{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:max(22px,env(safe-area-inset-bottom,0px));z-index:800;font-size:12px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.leaflet-bar a{background:var(--panel);color:var(--fg);border-color:var(--line)}
+.leaflet-control-attribution{background:var(--panel)!important;color:var(--muted)!important}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto}
+  .mapwrap{grid-column:1;grid-row:1;height:auto;display:flex;flex-direction:column}
+  #map{position:relative;inset:auto;height:56vh}
+  .zchip{bottom:auto;top:calc(56vh - 40px)}
+  .ficha{position:static;width:auto;max-height:none;border-radius:0;border-width:1px 0 0;box-shadow:none;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  aside{grid-column:1;grid-row:2;border-right:0;border-top:1px solid var(--line);overflow:visible;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+*,*::before,*::after{box-sizing:border-box}
+.hbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+.btn:disabled{opacity:.5;cursor:default}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.base-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6)}
+.leaflet-tile-pane{opacity:.85}
+.lbl-w{font-family:var(--f-body);font-style:italic;font-size:11.5px;color:var(--river);letter-spacing:.03em}
+.lbl-peak small{font-weight:400;color:var(--muted)}
+.tabs{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.tabs button{font:inherit;font-size:12px;padding:4px 10px;border:0;background:var(--panel);color:var(--fg);cursor:pointer}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.tabs button:disabled{color:var(--muted);cursor:not-allowed}
+
+.rankhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.rankhead h2{margin:0}
+.rankctl{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 6px;font-size:12px;color:var(--muted)}
+ol.rank{margin-top:4px}
+ol.rank .s{text-align:right;line-height:1.25}
+ol.rank .s small{display:block;font-size:10.5px;color:var(--muted);font-weight:400}
+.seg.t3{grid-template-columns:repeat(3,1fr)}
+#mun{font-weight:600}
+.kpis.k4{grid-template-columns:repeat(2,1fr)}
+.ficha{width:360px}
+table.cmp{width:100%;border-collapse:collapse;font-size:12px}
+table.cmp th{font-family:var(--f-data);font-weight:500;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:right;padding:0 0 4px 6px;white-space:nowrap}
+table.cmp th:first-child{text-align:left;padding-left:0}
+table.cmp td{padding:3px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+table.cmp tr.grp td{font-family:var(--f-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:10px;border-bottom:0}
+table.cmp td.v{text-align:right;font-family:var(--f-data);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:6px;font-weight:500}
+table.cmp td.a{text-align:right;font-family:var(--f-data);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:6px;color:var(--muted);width:52px}
+table.cmp tr.on td{background:var(--accent-soft)}
+table.cmp td.v.bad{color:var(--down)} table.cmp td.v.good{color:var(--up)}
+table.cmp td.v i{font-style:normal;font-size:9px;margin-left:2px;vertical-align:1px}
+.fkey{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.fkey .down,.fkey .up{font-weight:600}
+.big.b3{grid-template-columns:repeat(3,1fr)}
+.radhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.radhead h3{margin:0}
+.svc{width:100%;border-collapse:collapse;font-size:12px}
+.svc td{padding:3px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+.svc tr:last-child td{border-bottom:0}
+.svc td.n{text-align:right;font-family:var(--f-data);font-variant-numeric:tabular-nums;padding-left:6px;white-space:nowrap}
+.svc td small{display:block;color:var(--muted);font-size:11px}
+.factions{display:flex;gap:8px;flex-wrap:wrap}
+.howto{margin:10px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted)}
+.howto li{margin-bottom:2px}
+@media print{aside,.zchip,.leaflet-control-container{display:none!important}.app{display:block}.ficha{position:static;width:auto;box-shadow:none;max-height:none}}
+@media (max-width:860px){.ficha{width:auto} .zchip{top:10px;bottom:auto;left:auto;right:max(10px,env(safe-area-inset-right,0px));max-width:62%;font-size:11px;line-height:1.3;border-radius:10px}}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <aside>
+    <header>
+      <div class="eyebrow">Censo 2024 · atlas para instituciones</div>
+      <h1>Atlas del Censo 2024 en el departamento de Cochabamba</h1>
+      <p class="lead">Para alcaldías, gobernación y organizaciones: busca o toca cualquier lugar y revisa lo que dice el censo de quienes viven ahí, comparado con el municipio y el departamento.</p>
+      <ol class="howto">
+        <li>Elige el municipio y qué mostrar en el mapa.</li>
+        <li>Toca un barrio, zona, calle o manzano, o búscalo por su nombre.</li>
+        <li>Revisa la ficha, lo que hay alrededor y descárgala.</li>
+      </ol>
+    </header>
+
+    <section>
+      <h2><label for="mun">Municipio</label></h2>
+      <select id="mun"></select>
+      <div class="kpis k4" id="kpis" style="margin-top:10px"></div>
+      <p class="hint" id="loadmsg" aria-live="polite"></p>
+    </section>
+
+    <section class="search">
+      <h2><label for="q">Buscar un barrio o una calle</label></h2>
+      <input id="q" list="qlist" placeholder="Ej.: Villa Pagador, Av. Petrolera, Cala Cala" autocomplete="off">
+      <datalist id="qlist"></datalist>
+      <div class="msg" id="qmsg"></div>
+    </section>
+
+    <section>
+      <h2>Qué mostrar en el mapa</h2>
+      <div class="seg t3" id="temas" role="group" aria-label="Tema"></div>
+      <label class="f" for="indvar">Indicador</label>
+      <select id="indvar"></select>
+      <div class="legend" id="legend"></div>
+      <p class="hint" id="inddesc" style="margin-top:6px"></p>
+    </section>
+
+    <section>
+      <div class="rankhead">
+        <h2 id="rankh">Dónde está la mayor brecha</h2>
+      </div>
+      <div class="rankctl">
+        <div class="tabs" role="group" aria-label="Ordenar lugares">
+          <button id="r-barrios" type="button" aria-pressed="true">Barrios</button>
+          <button id="r-zonas" type="button" aria-pressed="false">Zonas</button>
+          <button id="r-calles" type="button" aria-pressed="false">Calles</button>
+        </div>
+        <div class="tabs" role="group" aria-label="Ordenar por" id="sortbox">
+          <button id="s-aff" type="button" aria-pressed="true">Personas</button>
+          <button id="s-pct" type="button" aria-pressed="false">%</button>
+        </div>
+      </div>
+      <ol class="rank" id="rank"></ol>
+      <p class="hint" id="rankhint" style="margin-top:6px"></p>
+    </section>
+
+    <div class="note">
+      <p><strong>Unidades.</strong> Barrios y localidades de OpenStreetMap: cada manzano va al barrio registrado más cercano (a menos de 600 m). Zonas: hexágonos de ~23 ha. Calles: suma de los manzanos que dan a cada tramo, de esquina a esquina.</p>
+      <p><strong>Brechas.</strong> Para los servicios y la salud, el mapa pinta lo que falta (por ejemplo, viviendas sin agua por cañería): más oscuro es peor. "Personas" ordena por cuántas personas viven en esa situación, una estimación que multiplica la población por el porcentaje.</p>
+      <p><strong>Límites.</strong> El censo describe dónde vive la gente. Los manzanos con pocas personas no tienen ficha por privacidad, y el área rural dispersa no tiene manzanos: la cobertura de cada municipio figura arriba. Los porcentajes de barrios, calles y radios son promedios ponderados por población.</p>
+      <p>Fuente: INE, Censo de Población y Vivienda 2024, fichas por manzano compiladas en atlasurbano (M. Foronda). Calles, barrios y servicios: © colaboradores de OpenStreetMap.</p>
+    </div>
+  </aside>
+
+  <div class="mapwrap">
+    <div id="map" role="region" aria-label="Mapa del municipio"></div>
+    <div class="zchip" id="zchip"></div>
+    <div class="ficha" id="ficha" aria-live="polite"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+const IDX = {"departamento":"Cochabamba","personas":1602131,"manzanos":41016,"municipios":[{"municipio":"Cochabamba","slug":"cochabamba","personas":665482,"manzanos":12477,"zonas":646,"cobertura":95.4,"centro":[-17.41969,-66.17265],"bounds":[-66.2636,-17.51368,-66.0817,-17.3257],"calles":true},{"municipio":"Sacaba","slug":"sacaba","personas":199841,"manzanos":4897,"zonas":327,"cobertura":91.7,"centro":[-17.40505,-65.98034],"bounds":[-66.13299,-17.46932,-65.82769,-17.34079],"calles":true},{"municipio":"Quillacollo","slug":"quillacollo","personas":162129,"manzanos":2415,"zonas":245,"cobertura":96.2,"centro":[-17.36661,-66.28056],"bounds":[-66.32744,-17.42766,-66.23369,-17.30556],"calles":true},{"municipio":"Colcapirhua","slug":"colcapirhua","personas":66505,"manzanos":907,"zonas":96,"cobertura":97.4,"centro":[-17.38781,-66.23089],"bounds":[-66.2545,-17.42561,-66.20727,-17.35002],"calles":true},{"municipio":"Tiquipaya","slug":"tiquipaya","personas":58984,"manzanos":835,"zonas":95,"cobertura":96.9,"centro":[-17.25339,-66.19098],"bounds":[-66.24471,-17.37426,-66.13724,-17.13253],"calles":true},{"municipio":"Vinto","slug":"vinto","personas":54118,"manzanos":996,"zonas":99,"cobertura":94.3,"centro":[-17.37692,-66.33817],"bounds":[-66.3734,-17.42123,-66.30294,-17.33261],"calles":true},{"municipio":"Sipesipe","slug":"sipesipe","personas":51661,"manzanos":1426,"zonas":125,"cobertura":91.0,"centro":[-17.49133,-66.35004],"bounds":[-66.39686,-17.58946,-66.30322,-17.39321],"calles":true},{"municipio":"Puerto Villarroel","slug":"puerto-villarroel","personas":37021,"manzanos":1502,"zonas":77,"cobertura":82.7,"centro":[-17.0441,-64.86604],"bounds":[-65.08691,-17.26522,-64.64517,-16.82298],"calles":true},{"municipio":"Villa Tunari","slug":"villa-tunari","personas":34598,"manzanos":1630,"zonas":77,"cobertura":81.4,"centro":[-16.73364,-65.57765],"bounds":[-65.90367,-17.03296,-65.25164,-16.43433],"calles":true},{"municipio":"Entre Ríos","slug":"entre-rios","personas":31501,"manzanos":1265,"zonas":65,"cobertura":83.3,"centro":[-17.20112,-64.51251],"bounds":[-64.68448,-17.26941,-64.34054,-17.13282],"calles":true},{"municipio":"Arbieto","slug":"arbieto","personas":28031,"manzanos":2047,"zonas":52,"cobertura":69.8,"centro":[-17.52945,-66.05002],"bounds":[-66.1289,-17.60536,-65.97113,-17.45353],"calles":true},{"municipio":"Punata","slug":"punata","personas":27983,"manzanos":806,"zonas":52,"cobertura":90.8,"centro":[-17.52521,-65.83494],"bounds":[-65.88822,-17.58422,-65.78166,-17.4662],"calles":true},{"municipio":"Cliza","slug":"cliza","personas":17502,"manzanos":584,"zonas":41,"cobertura":87.0,"centro":[-17.58411,-65.9335],"bounds":[-65.97975,-17.62108,-65.88725,-17.54713],"calles":true},{"municipio":"Chimoré","slug":"chimore","personas":16960,"manzanos":767,"zonas":40,"cobertura":79.9,"centro":[-16.63149,-65.05633],"bounds":[-65.21181,-17.09544,-64.90084,-16.16754],"calles":true},{"municipio":"Shinahota","slug":"shinahota","personas":16630,"manzanos":674,"zonas":34,"cobertura":82.2,"centro":[-17.01199,-65.29354],"bounds":[-65.41204,-17.12989,-65.17503,-16.89409],"calles":true},{"municipio":"Capinota","slug":"capinota","personas":15240,"manzanos":774,"zonas":36,"cobertura":78.7,"centro":[-17.74776,-66.22031],"bounds":[-66.31206,-17.88926,-66.12857,-17.60626],"calles":true},{"municipio":"San Benito","slug":"san-benito","personas":11760,"manzanos":591,"zonas":28,"cobertura":83.1,"centro":[-17.53338,-65.8861],"bounds":[-65.95291,-17.56993,-65.81929,-17.49684],"calles":true},{"municipio":"Aiquile","slug":"aiquile","personas":10952,"manzanos":415,"zonas":25,"cobertura":85.8,"centro":[-18.33625,-65.07879],"bounds":[-65.28401,-18.60335,-64.87357,-18.06915],"calles":true},{"municipio":"Tolata","slug":"tolata","personas":8151,"manzanos":531,"zonas":16,"cobertura":57.1,"centro":[-17.53434,-66.01793],"bounds":[-66.08508,-17.55099,-65.95079,-17.51769],"calles":true},{"municipio":"Colomi","slug":"colomi","personas":7766,"manzanos":219,"zonas":16,"cobertura":93.4,"centro":[-17.173,-65.92683],"bounds":[-66.00519,-17.35912,-65.84847,-16.98687],"calles":true},{"municipio":"Mizque","slug":"mizque","personas":7477,"manzanos":379,"zonas":13,"cobertura":78.2,"centro":[-18.07663,-65.40968],"bounds":[-65.55237,-18.22663,-65.267,-17.92663],"calles":true},{"municipio":"Tarata","slug":"tarata","personas":7025,"manzanos":375,"zonas":12,"cobertura":78.7,"centro":[-17.67399,-66.02775],"bounds":[-66.09205,-17.75503,-65.96344,-17.59294],"calles":true},{"municipio":"Arani","slug":"arani","personas":5677,"manzanos":208,"zonas":12,"cobertura":88.4,"centro":[-17.58666,-65.76569],"bounds":[-65.81332,-17.61403,-65.71807,-17.5593],"calles":true},{"municipio":"Ayopaya","slug":"ayopaya","personas":5417,"manzanos":391,"zonas":13,"cobertura":70.8,"centro":[-17.19597,-66.82732],"bounds":[-66.96692,-17.4078,-66.68772,-16.98413],"calles":true},{"municipio":"Tapacarí","slug":"tapacari","personas":4664,"manzanos":401,"zonas":7,"cobertura":61.9,"centro":[-17.58422,-66.59243],"bounds":[-66.83258,-17.71286,-66.35228,-17.45557],"calles":true},{"municipio":"Omereque","slug":"omereque","personas":4515,"manzanos":249,"zonas":11,"cobertura":60.8,"centro":[-18.14325,-64.8452],"bounds":[-64.92622,-18.20395,-64.76418,-18.08255],"calles":true},{"municipio":"Santiváñez","slug":"santivanez","personas":3932,"manzanos":310,"zonas":3,"cobertura":60.7,"centro":[-17.56112,-66.20486],"bounds":[-66.27414,-17.62399,-66.13559,-17.49825],"calles":true},{"municipio":"Villa Rivero","slug":"villa-rivero","personas":3720,"manzanos":226,"zonas":10,"cobertura":80.6,"centro":[-17.61131,-65.84581],"bounds":[-65.88715,-17.62671,-65.80447,-17.5959],"calles":true},{"municipio":"Pojo","slug":"pojo","personas":3645,"manzanos":274,"zonas":6,"cobertura":59.1,"centro":[-17.79606,-64.85036],"bounds":[-65.02143,-17.8912,-64.67928,-17.70092],"calles":true},{"municipio":"Tiraque","slug":"tiraque","personas":3625,"manzanos":266,"zonas":5,"cobertura":68.2,"centro":[-17.43093,-65.69432],"bounds":[-65.8689,-17.48238,-65.51974,-17.37948],"calles":true},{"municipio":"Pasorapa","slug":"pasorapa","personas":2807,"manzanos":100,"zonas":6,"cobertura":74.3,"centro":[-18.40242,-64.55102],"bounds":[-64.68254,-18.48927,-64.41949,-18.31556],"calles":true},{"municipio":"Totora","slug":"totora","personas":2445,"manzanos":223,"zonas":5,"cobertura":56.0,"centro":[-17.68943,-65.16297],"bounds":[-65.233,-17.74394,-65.09294,-17.63492],"calles":true},{"municipio":"Bolívar","slug":"bolivar","personas":2321,"manzanos":238,"zonas":6,"cobertura":56.6,"centro":[-18.01461,-66.61702],"bounds":[-66.75878,-18.12478,-66.47525,-17.90443],"calles":true},{"municipio":"Toco","slug":"toco","personas":2280,"manzanos":151,"zonas":4,"cobertura":68.1,"centro":[-17.63107,-65.92431],"bounds":[-65.95002,-17.6524,-65.8986,-17.60975],"calles":true},{"municipio":"Cocapata","slug":"cocapata","personas":2172,"manzanos":168,"zonas":5,"cobertura":54.1,"centro":[-16.48282,-66.61091],"bounds":[-66.88062,-17.08557,-66.34119,-15.88007],"calles":true},{"municipio":"Sicaya","slug":"sicaya","personas":2115,"manzanos":138,"zonas":4,"cobertura":63.3,"centro":[-17.77384,-66.34264],"bounds":[-66.35599,-17.80499,-66.32929,-17.74269],"calles":true},{"municipio":"Tacopaya","slug":"tacopaya","personas":1963,"manzanos":207,"zonas":4,"cobertura":46.7,"centro":[-17.83452,-66.62288],"bounds":[-66.71164,-17.92149,-66.53413,-17.74756],"calles":true},{"municipio":"Anzaldo","slug":"anzaldo","personas":1895,"manzanos":145,"zonas":3,"cobertura":67.1,"centro":[-17.75322,-65.92449],"bounds":[-65.96438,-17.80573,-65.8846,-17.70071],"calles":true},{"municipio":"Vila Vila","slug":"vila-vila","personas":1630,"manzanos":118,"zonas":5,"cobertura":64.8,"centro":[-17.98332,-65.68061],"bounds":[-65.73574,-18.05389,-65.62547,-17.91275],"calles":true},{"municipio":"Vacas","slug":"vacas","personas":1615,"manzanos":116,"zonas":2,"cobertura":60.8,"centro":[-17.60473,-65.59332],"bounds":[-65.64596,-17.65043,-65.54068,-17.55902],"calles":true},{"municipio":"Villa Gualberto Villarroel","slug":"villa-gualberto-villarroel","personas":1531,"manzanos":30,"zonas":4,"cobertura":92.9,"centro":[-17.65225,-65.79338],"bounds":[-65.80165,-17.65866,-65.78511,-17.64584],"calles":true},{"municipio":"Sacabamba","slug":"sacabamba","personas":1520,"manzanos":73,"zonas":4,"cobertura":82.4,"centro":[-17.76915,-65.80666],"bounds":[-65.83966,-17.82339,-65.77367,-17.71491],"calles":true},{"municipio":"Arque","slug":"arque","personas":1514,"manzanos":151,"zonas":3,"cobertura":57.9,"centro":[-17.80687,-66.47293],"bounds":[-66.55302,-17.90512,-66.39283,-17.70861],"calles":true},{"municipio":"Tioc-Raqaypampa","slug":"tioc-raqaypampa","personas":1215,"manzanos":125,"zonas":4,"cobertura":67.0,"centro":[-18.2472,-65.3578],"bounds":[-65.39546,-18.3085,-65.32015,-18.1859],"calles":true},{"municipio":"Tacachi","slug":"tacachi","personas":1068,"manzanos":79,"zonas":2,"cobertura":69.9,"centro":[-17.63933,-65.80101],"bounds":[-65.81502,-17.65144,-65.78699,-17.62722],"calles":true},{"municipio":"Pocona","slug":"pocona","personas":898,"manzanos":84,"zonas":2,"cobertura":48.3,"centro":[-17.60464,-65.35514],"bounds":[-65.42691,-17.67802,-65.28338,-17.53126],"calles":true},{"municipio":"Morochata","slug":"morochata","personas":630,"manzanos":33,"zonas":2,"cobertura":81.0,"centro":[-17.2105,-66.57079],"bounds":[-66.61326,-17.24014,-66.52832,-17.18087],"calles":true}],"dep":{"sh0_19":35.1,"sh20_39":34.0,"sh40_59":19.6,"sh60":11.3,"sh_sup":43.2,"sh_int":85.5,"sh_piso":50.6,"sh_sinrev":15.1,"sh_haca":10.1,"sh_agua":70.8,"sh_alc":62.5,"sh_gas":36.9,"sh_ele":96.7,"sh_prop":65.3,"sh_alq":24.7,"sh_afil":18.6,"sh_sinseg":16.4,"sh_farm":56.8,"sh_emp":39.1,"sh_cp":45.1,"sh_com":22.7,"sh_ens":5.8,"sh_cons":7.7,"sh_agri":12.9,"sh_trans":7.3,"sh_unip":22.0,"sh_fam":44.5,"sh_migr":48.3,"sh_celnoint":7.4,"sh_ning":3.5,"sh_prim":15.7,"sh_sec":37.4,"sh_sus":64.8}};
+const $ = id => document.getElementById(id);
+const fmt = n => n == null ? 's/d' : Math.round(n).toLocaleString('es-BO');
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm = t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+const STANDALONE = true;   // true en la versión pública: teselas de OpenStreetMap y descarga directa
+const OP = STANDALONE ? {blk:.3, hex:.72} : {blk:1, hex:.85};
+const sumk = (o,a)=>a.reduce((s,k)=>s+(o[k]||0),0);
+const KX=111320*Math.cos(17.4*Math.PI/180), KY=110574;
+const dist=(a,b)=>Math.hypot((a[1]-b[1])*KX,(a[0]-b[0])*KY);
+const dtxt = m => m>=1000 ? (m/1000).toFixed(1).replace('.',',')+' km' : Math.round(m/10)*10+' m';
+const pfmt = v => v==null ? 's/d' : (Math.abs(v)<10 ? v.toFixed(1).replace('.',',') : Math.round(v))+'%';
+const DEPV = IDX.dep;
+
+// ---------- Indicadores ----------
+const AGE_ALL = ['e0a19_h','e20a39_h','e40a59_h','e60omas_h','e0a19_m','e20a39_m','e40a59_m','e60omas_m'];
+const EDU_ALL = ['edu_ninguno','edu_prim','edu_sec','edu_sup'], AFI_ALL = ['afi_sus','afi_cp','afi_nin'];
+const CNT = ['farm',...AGE_ALL,...EDU_ALL,...AFI_ALL];
+const share = (o,num,den)=>{ const d=sumk(o,den); return d>0 ? sumk(o,num)/d*100 : null; };
+const TEMAS = [['pob','Población'],['edu','Educación'],['salud','Salud'],['serv','Servicios'],['viv','Vivienda'],['trab','Trabajo']];
+// d: 1 = más es mejor (la brecha es lo que falta), -1 = más es peor, 0 = descriptivo. b: cómo se lee la brecha
+const IND = [
+  {k:'personas', t:'pob', l:'Personas', cnt:true, f:o=>o.personas},
+  {k:'n0_19', t:'pob', l:'Niños y jóvenes de 0 a 19 años', cnt:true, full:true, f:o=>sumk(o,['e0a19_h','e0a19_m'])},
+  {k:'n60', t:'pob', l:'Adultos de 60 años o más', cnt:true, full:true, f:o=>sumk(o,['e60omas_h','e60omas_m'])},
+  {k:'sh0_19', t:'pob', l:'De 0 a 19 años'}, {k:'sh20_39', t:'pob', l:'De 20 a 39 años'},
+  {k:'sh40_59', t:'pob', l:'De 40 a 59 años'}, {k:'sh60', t:'pob', l:'De 60 años o más'},
+  {k:'sh_migr', t:'pob', l:'Nacidos en otro municipio o país'},
+  {k:'sh_ning', t:'edu', l:'Sin ningún nivel educativo', d:-1, b:'sin ningún nivel educativo', f:o=>share(o,['edu_ninguno'],EDU_ALL)},
+  {k:'sh_prim', t:'edu', l:'Primaria como nivel más alto', f:o=>share(o,['edu_prim'],EDU_ALL)},
+  {k:'sh_sec', t:'edu', l:'Secundaria como nivel más alto', f:o=>share(o,['edu_sec'],EDU_ALL)},
+  {k:'sh_sup', t:'edu', l:'Con educación superior', d:1, b:'sin educación superior'},
+  {k:'sh_sinseg', t:'salud', l:'Sin ningún seguro de salud', d:-1, b:'sin ningún seguro de salud'},
+  {k:'sh_sus', t:'salud', l:'Afiliados al SUS', f:o=>share(o,['afi_sus'],AFI_ALL)},
+  {k:'sh_afil', t:'salud', l:'Con caja de salud o seguro privado'},
+  {k:'sh_farm', t:'salud', l:'Acuden a farmacia sin receta'},
+  {k:'sh_agua', t:'serv', l:'Agua por cañería', d:1, b:'sin agua por cañería'},
+  {k:'sh_alc', t:'serv', l:'Alcantarillado', d:1, b:'sin alcantarillado'},
+  {k:'sh_ele', t:'serv', l:'Electricidad de red pública', d:1, b:'sin electricidad de red pública'},
+  {k:'sh_gas', t:'serv', l:'Gas domiciliario', d:1, b:'sin gas domiciliario'},
+  {k:'sh_int', t:'serv', l:'Hogares con internet', d:1, b:'hogares sin internet'},
+  {k:'sh_celnoint', t:'serv', l:'Hogares con celular pero sin internet'},
+  {k:'sh_prop', t:'viv', l:'Vivienda propia'}, {k:'sh_alq', t:'viv', l:'Alquiler o anticrético'},
+  {k:'sh_piso', t:'viv', l:'Piso de cerámica, parquet o similar', d:1, b:'sin piso de cerámica o parquet'},
+  {k:'sh_sinrev', t:'viv', l:'Paredes sin revoque', d:-1, b:'con paredes sin revoque'},
+  {k:'sh_haca', t:'viv', l:'Hogares con hacinamiento alto', d:-1, b:'con hacinamiento alto'},
+  {k:'sh_unip', t:'viv', l:'Hogares de una persona'}, {k:'sh_fam', t:'viv', l:'Hogares con hijos'},
+  {k:'sh_emp', t:'trab', l:'Ocupados como empleados'}, {k:'sh_cp', t:'trab', l:'Trabajan por cuenta propia'},
+  {k:'sh_com', t:'trab', l:'Trabajan en comercio'}, {k:'sh_agri', t:'trab', l:'Trabajan en agricultura'},
+  {k:'sh_cons', t:'trab', l:'Trabajan en construcción'}, {k:'sh_trans', t:'trab', l:'Trabajan en transporte'},
+  {k:'sh_ens', t:'trab', l:'Trabajan en enseñanza'},
+];
+const IB = Object.fromEntries(IND.map(x=>[x.k,x]));
+const SHK = ['sh0_19','sh20_39','sh40_59','sh60','sh_sup','sh_int','sh_piso','sh_sinrev','sh_haca','sh_agua','sh_alc','sh_gas','sh_ele','sh_prop','sh_alq','sh_afil','sh_sinseg','sh_farm','sh_emp','sh_cp','sh_com','sh_ens','sh_cons','sh_agri','sh_trans','sh_unip','sh_fam','sh_migr','sh_celnoint'];
+const hasFicha = it => it.kind==='mz' ? it.full : true;
+function V(it,k){ const x=IB[k]; if(!hasFicha(it) && k!=='personas') return null; const v = x.f ? x.f(it.o) : it.o[k]; return v==null||Number.isNaN(v) ? null : v; }
+const gap = (x,v) => v==null ? null : x.d===1 ? 100-v : v;          // lo que se pinta: la brecha o el valor
+function agg(list){  // suma conteos y pondera porcentajes por población (manzanos o tramos)
+  const o={personas:0, viviendas:0}; CNT.forEach(k=>o[k]=0); const ws={}, wn={}; let pf=0;
+  for(const b of list){ o.personas+=b.o.personas||0; o.viviendas+=b.o.viviendas||0; if(!b.full) continue; pf+=b.o.personas||0;
+    for(const k of CNT) o[k]+=b.o[k]||0;
+    for(const k of SHK){ const v=b.o[k]; if(v!=null){ ws[k]=(ws[k]||0)+v*b.o.personas; wn[k]=(wn[k]||0)+b.o.personas; } } }
+  for(const k of SHK) o[k] = wn[k] ? ws[k]/wn[k] : null;
+  const pa=sumk(o,AGE_ALL); if(pa){ o.sh0_19=share(o,['e0a19_h','e0a19_m'],AGE_ALL); o.sh20_39=share(o,['e20a39_h','e20a39_m'],AGE_ALL); o.sh40_59=share(o,['e40a59_h','e40a59_m'],AGE_ALL); o.sh60=share(o,['e60omas_h','e60omas_m'],AGE_ALL); }
+  if(sumk(o,AFI_ALL)){ o.sh_sinseg=share(o,['afi_nin'],AFI_ALL); o.sh_afil=share(o,['afi_cp'],AFI_ALL); }
+  o.pf = pf; return o;
+}
+
+// ---------- Mapa ----------
+let M=null, curT='serv', curK='sh_agua', rankBy='barrios', sortBy='aff', pinned=null, shown=null, PT=null, R=1000, CERCA=null, DL=null, lastRows=null;
+const map = L.map('map',{preferCanvas:true,zoomSnap:.25,zoomDelta:.5,maxZoom:18.5});
+map.attributionControl.setPrefix('').addAttribution(STANDALONE ? 'INE Censo 2024 · atlasurbano' : 'INE Censo 2024 · atlasurbano · © OpenStreetMap');
+let baseTiles=null;
+function setBasemap(){
+  if(!STANDALONE) return;
+  const dark = document.documentElement.dataset.theme==='dark' || (document.documentElement.dataset.theme!=='light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  if(baseTiles) map.removeLayer(baseTiles);
+  baseTiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+  map.getContainer().classList.toggle('base-dark', dark);
+}
+setBasemap();
+const rend = L.canvas({padding:.4, tolerance:3});
+const ZB = 15;
+map.createPane('basemap'); map.getPane('basemap').style.zIndex = 350; map.getPane('basemap').style.pointerEvents = 'none';
+const rendB = L.canvas({pane:'basemap', padding:.4});
+const gBase=L.layerGroup().addTo(map), gMinor=L.layerGroup();
+const gBlocks=L.layerGroup().addTo(map), gHex=L.layerGroup().addTo(map), gTram=L.layerGroup().addTo(map), gLbl=L.layerGroup().addTo(map);
+map.createPane('sel'); map.getPane('sel').style.zIndex = 450; map.getPane('sel').style.pointerEvents = 'none';
+const selR = L.svg({pane:'sel', padding:.5});
+const ring = L.circle([0,0],{renderer:selR,interactive:false,radius:1,weight:1.5,dashArray:'5 5',fill:true,fillOpacity:.04});
+const hlHalo = L.polygon([],{renderer:selR,interactive:false,fill:false,weight:7,lineJoin:'round'}).addTo(map);
+const hl = L.polygon([],{renderer:selR,interactive:false,fill:true,fillOpacity:0,weight:2.5,lineJoin:'round'}).addTo(map);
+const stHalo = L.polyline([],{renderer:selR,interactive:false,lineCap:'round',lineJoin:'round'}).addTo(map);
+const stLine = L.polyline([],{renderer:selR,interactive:false,lineCap:'round',lineJoin:'round'}).addTo(map);
+const hlLineHalo = L.polyline([],{renderer:selR,interactive:false,lineCap:'round',lineJoin:'round'}).addTo(map);
+const hlLine = L.polyline([],{renderer:selR,interactive:false,lineCap:'round',lineJoin:'round'}).addTo(map);
+const ptDot = L.circleMarker([0,0],{renderer:selR,interactive:false,radius:5,weight:2,fillOpacity:1});
+function styleHL(p){
+  hl.setStyle({color:css('--fg'), weight:p?3:2, fillColor:css('--fg'), fillOpacity:p?.12:.05});
+  hlHalo.setStyle({color:css('--panel'), weight:p?8:5, opacity:p?.95:.7});
+  hlLine.setStyle({color:css('--fg'), weight:p?5.5:4}); hlLineHalo.setStyle({color:css('--panel'), weight:p?12:9, opacity:.95});
+  stLine.setStyle({color:css('--sel'), weight:p?5:4, opacity:.95}); stHalo.setStyle({color:css('--panel'), weight:p?10:8, opacity:.9});
+  ring.setStyle({color:css('--sel'), fillColor:css('--sel')}); ptDot.setStyle({color:css('--panel'), fillColor:css('--sel')});
+}
+function clearHL(){ [hl,hlHalo].forEach(l=>l.setLatLngs([])); [stLine,stHalo,hlLine,hlLineHalo].forEach(l=>l.setLatLngs([])); }
+
+const RAMP = ['#f7f4c6','#cde8a2','#8fd18a','#45b07a','#1a8a6e','#0b6467','#103f5a'];
+const BRAMP = ['#fbf1d9','#f6d6a1','#efb27a','#e2835a','#cb5444','#a6323b','#741d31'];
+function mix(R,t){ t=Math.max(0,Math.min(1,t)); const i=t*(R.length-1), a=Math.floor(i), f=i-a; if(a>=R.length-1) return R[R.length-1];
+  const h=s=>[1,3,5].map(k=>parseInt(s.slice(k,k+2),16)), c1=h(R[a]), c2=h(R[a+1]); return 'rgb('+c1.map((v,k)=>Math.round(v+(c2[k]-v)*f)).join(',')+')'; }
+
+// ---------- Mapa base dibujado (dentro de Claude no se cargan teselas externas) ----------
+let BASE=[];
+function decPoly(s){ const out=[]; let i=0, la=0, lo=0;
+  while(i<s.length){ const v=[0,0]; for(let k=0;k<2;k++){ let sh=0, r=0, b; do{ b=s.charCodeAt(i++)-63; r|=(b&31)<<sh; sh+=5; }while(b>=32); v[k]=(r&1)?~(r>>1):(r>>1); }
+    la+=v[0]; lo+=v[1]; out.push([la/1e5, lo/1e5]); }
+  return out; }
+const BASE_STY = {
+  agro:  t=>({fill:true, stroke:false, fillColor:css('--agro'), fillOpacity:1}),
+  bosque:t=>({fill:true, stroke:false, fillColor:css('--wood'), fillOpacity:1}),
+  verde: t=>({fill:true, stroke:false, fillColor:css('--green'), fillOpacity:1}),
+  aero:  t=>({fill:true, stroke:false, fillColor:css('--aero'), fillOpacity:1}),
+  agua:  t=>({fill:true, stroke:false, fillColor:css('--water'), fillOpacity:1}),
+  rio:   t=>({fill:false, color:css('--river'), weight: t==='r'?3:t==='c'?1.6:1.1, opacity:.9, lineCap:'round'}),
+  pista: t=>({fill:false, color:css('--rail'), weight:4, opacity:.6}),
+  tren:  t=>({fill:false, color:css('--rail'), weight:1.4, opacity:.9, dashArray:'6 4'}),
+  calle: t=>({fill:false, color:css('--minor'), weight:.8, opacity:.9}),
+};
+function drawBase(base){
+  if(!base) return;
+  for(const k of ['agro','bosque','verde','aero','agua','rio','pista','tren','calle']){
+    for(const e of (base[k]||[])){ const [enc,t] = Array.isArray(e)?e:[e,''];
+      const ll=decPoly(enc); if(ll.length<2) continue;
+      const area = ['agro','bosque','verde','aero','agua'].includes(k);
+      const lyr = (area?L.polygon:L.polyline)(ll, {renderer:rendB, interactive:false, ...BASE_STY[k](t)});
+      ((k==='calle' || (k==='rio' && t!=='r')) ? gMinor : gBase).addLayer(lyr); BASE.push([lyr,k,t]); } }
+  showMinor();
+}
+function showMinor(){ const on = map.getZoom()>=13; if(on && !map.hasLayer(gMinor)) gMinor.addTo(map); else if(!on && map.hasLayer(gMinor)) map.removeLayer(gMinor); }
+function restyleBase(){ for(const [l,k,t] of BASE) l.setStyle(BASE_STY[k](t)); }
+
+// ---------- Carga de un municipio ----------
+$('mun').innerHTML = IDX.municipios.map(m=>`<option value="${m.slug}">${esc(m.municipio)} · ${fmt(m.personas)} hab.</option>`).join('');
+async function loadMun(slug){
+  const meta = IDX.municipios.find(m=>m.slug===slug) || IDX.municipios[0];
+  $('mun').value = meta.slug; $('loadmsg').textContent = `Cargando ${meta.municipio}…`;
+  try{ if(location.hash!=='#'+meta.slug) history.replaceState(null,'','#'+meta.slug); }catch(e){}
+  const get = (k, opt)=>fetch(`../datos/${meta.slug}.${k}.json`).then(r=>{ if(!r.ok){ if(opt) return null; throw new Error(r.status); } return r.json(); });
+  let mun, osm, calles, base;
+  try{ [mun, osm, calles, base] = await Promise.all([get('mun'), get('osm'), meta.calles ? get('calles', true) : null, STANDALONE ? null : get('base', true).catch(()=>null)]); }
+  catch(e){ $('loadmsg').textContent = `No pude cargar los datos de ${meta.municipio}. Recarga la página para intentar de nuevo.`; return; }
+  build(meta, mun, osm, calles, base);
+  $('loadmsg').textContent = '';
+}
+const streetTxt = t => { const n=M.TN[t.n]; const a=t.a>=0?M.TN[t.a]:null, b=t.b>=0?M.TN[t.b]:null;
+  return a&&b&&a!==b ? `${n} entre ${a} y ${b}` : a||b ? `${n}, esquina ${a||b}` : n; };
+
+function build(meta, mun, osm, calles, base){
+  pinned=null; shown=null; PT=null; clearHL(); map.removeLayer(ring); map.removeLayer(ptDot);
+  [gBase,gMinor,gBlocks,gHex,gTram,gLbl].forEach(g=>g.clearLayers()); BASE=[];
+  const keys = mun.keys, obj = v=>{ const o={}; keys.forEach((k,i)=>o[k]=v[i]); return o; };
+  const NM = mun.names;
+  const place = n => !n ? {t:meta.municipio, near:true} : {t:NM[n[0]], near:n[1]>600};
+  const placeTxt = n => { const p=place(n); return (p.near?'Cerca de ':'')+p.t; };
+  M = {meta, NM, place, placeTxt, osm};
+  M.CITY = {kind:'mun', o:obj(mun.city)};
+  M.HEX = mun.hex.map((h,i)=>({kind:'hex', i, o:obj(h.v), mz:h.mz, n:h.n, ll:h.g.map(([x,y])=>[y,x])}));
+  M.HEX.forEach(h=>h.cen=[h.ll.reduce((s,p)=>s+p[0],0)/h.ll.length, h.ll.reduce((s,p)=>s+p[1],0)/h.ll.length]);
+  M.TN = calles ? calles.names : [];
+  M.TR = calles ? calles.tramos.map((t,i)=>({kind:'tramo', i, o:obj(t.v), n:t.n, a:t.a, b:t.b, c:t.c, mz:t.mz, ll:t.g})) : [];
+  M.TR.forEach(t=>{ const g=t.ll, m=g[Math.floor(g.length/2)]; t.cen = g.length>2 ? m : [(g[0][0]+g[g.length-1][0])/2,(g[0][1]+g[g.length-1][1])/2]; t.full = t.o.sh60!=null; });
+  M.streets = {}; M.TR.forEach(t=>{ (M.streets[t.n]=M.streets[t.n]||[]).push(t); });
+  M.STREETS = {}; for(const [n,ts] of Object.entries(M.streets)){ const mid=ts.slice().sort((a,b)=>a.cen[1]-b.cen[1])[Math.floor(ts.length/2)];
+    M.STREETS[n] = {kind:'calle', n:+n, ts, o:agg(ts), cen:mid.cen}; }
+
+  drawBase(base);
+  const blk = css('--block');
+  M.BLOCKS = mun.blocks.map(b=>{
+    const ll = b.g.map(r=>r.map(([x,y])=>[y,x]));
+    const lyr = L.polygon(ll,{renderer:rend,stroke:false,fillColor:blk,fillOpacity:OP.blk,interactive:false});
+    const it = {kind:'mz', c:b.c, h:b.h, n:b.n, full:b.v.length>2, o:b.v.length>2?obj(b.v):{personas:b.v[0],viviendas:b.v[1]}, lyr,
+      cen:[ll[0].reduce((s,p)=>s+p[0],0)/ll[0].length, ll[0].reduce((s,p)=>s+p[1],0)/ll[0].length]};
+    lyr.on('mouseover',()=>hover(it)); lyr.on('click',e=>pick(it,e));
+    lyr.bindTooltip(()=>placeTxt(b.n),{sticky:true,className:'tipn',direction:'top',offset:[0,-8]}); gBlocks.addLayer(lyr); return it; });
+  M.HEX.forEach(h=>{ h.lyr = L.polygon(h.ll,{renderer:rend,interactive:true}); gHex.addLayer(h.lyr);
+    h.lyr.on('mouseover',()=>hover(h)); h.lyr.on('click',e=>pick(h,e));
+    h.lyr.bindTooltip(()=>placeTxt(h.n),{sticky:true,className:'tipn',direction:'top',offset:[0,-8]}); });
+  M.TR.forEach(t=>{ t.lyr = L.polyline(t.ll,{renderer:rend,interactive:false,lineCap:'round'}); gTram.addLayer(t.lyr);
+    t.lyr.on('mouseover',()=>hover(t)); t.lyr.on('click',e=>pick(t,e));
+    t.lyr.bindTooltip(()=>streetTxt(t),{sticky:true,className:'tipn',direction:'top',offset:[0,-8]}); });
+
+  // Barrios: los manzanos asignados a cada barrio de OpenStreetMap
+  const byB = {};
+  M.BLOCKS.forEach(b=>{ if(b.n && b.n[1]<=600) (byB[NM[b.n[0]]]=byB[NM[b.n[0]]]||[]).push(b); });
+  M.BARRIOS = Object.entries(byB).map(([name,bl],i)=>{ const o=agg(bl); const w=bl.reduce((s,b)=>s+(b.o.personas||1),0);
+    return {kind:'barrio', i, name, bl, o, cen:[bl.reduce((s,b)=>s+b.cen[0]*(b.o.personas||1),0)/w, bl.reduce((s,b)=>s+b.cen[1]*(b.o.personas||1),0)/w]}; })
+    .filter(b=>b.o.pf>0);
+  M.BYNAME = Object.fromEntries(M.BARRIOS.map(b=>[b.name,b]));
+
+  // Etiquetas
+  M.LBL = [];
+  const mk = (ll,html,z,cls='')=>M.LBL.push({z, ll, m:L.marker(ll,{interactive:false,keyboard:false,icon:L.divIcon({className:'',html:`<div class="lbl ${cls}">${html}</div>`,iconSize:null})})});
+  Object.entries(M.streets).forEach(([n,ts])=>{ const c = ts.some(t=>t.c==='p')?'p':ts.some(t=>t.c==='s')?'s':'r';
+    const longest = ts.slice().sort((a,b)=>b.ll.length-a.ll.length)[0];
+    mk(longest.cen, esc(M.TN[n].replace(/^Avenida /,'Av. ')), c==='p'?13.5:c==='s'?15:16.5, 'lbl-r'+(c==='p'?' t':'')); });
+  osm.barrios.forEach(([n,la,lo])=>mk([la,lo], esc(n), 15.5, 'lbl-b'));
+  if(base){ (base.rio_nombres||[]).forEach(([n,la,lo])=>mk([la,lo], esc(n), 13.5, 'lbl-w'));
+    (base.cerro||[]).forEach(([n,la,lo,ele])=>mk([la,lo], `<i>▲</i>${esc(n)}${ele?` <small>${fmt(ele)} m</small>`:''}`, 13, 'lbl-l lbl-peak')); }
+  osm.pueblos.forEach(([n,la,lo])=>mk([la,lo], esc(n), 10, 'lbl-p'));
+  const LMI = {mercado:['M',14],hospital:['H',14.5],universidad:['U',15],terminal:['T',13.5],plaza:['★',15],banco:['B',16.5],supermercado:['S',16],escuela:['E',16.5]};
+  Object.entries(osm.lm).forEach(([k,arr])=>arr.forEach(([n,la,lo])=>mk([la,lo], `<i>${LMI[k][0]}</i>${esc(n)}`, LMI[k][1], 'lbl-l')));
+
+  // Panel
+  $('kpis').innerHTML = [[fmt(meta.personas),'personas'],[fmt(M.CITY.o.viviendas),'viviendas'],[fmt(meta.manzanos),'manzanos'],[String(meta.cobertura).replace('.',',')+'%','de la población con ficha por manzano']]
+    .map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+  M.BAR = {}; osm.barrios.concat(osm.pueblos).forEach(([n,la,lo])=>{ (M.BAR[n]=M.BAR[n]||[]).push([la,lo]); });
+  M.BARRIOS.forEach(b=>{ if(!M.BAR[b.name]) M.BAR[b.name]=[b.cen]; });
+  const opts = Object.keys(M.BAR).concat(Object.keys(M.streets).map(n=>M.TN[n]));
+  $('qlist').innerHTML = [...new Set(opts)].sort((a,b)=>a.localeCompare(b,'es')).map(n=>`<option value="${esc(n)}"></option>`).join('');
+  $('q').value=''; $('qmsg').textContent='';
+  $('r-calles').disabled = !M.TR.length; if(!M.TR.length && rankBy==='calles') rankBy='barrios';
+
+  const b = meta.bounds; map.fitBounds([[b[1],b[0]],[b[3],b[2]]], innerWidth>860 ? {paddingTopLeft:[10,10], paddingBottomRight:[380,10]} : {padding:[10,10]});
+  styleAll.blk=null; refresh(); drawLabels();
+}
+
+// ---------- Dibujo ----------
+function rangeOf(items){ const x=IB[curK]; const vs=items.map(it=>gap(x,V(it,curK))).filter(v=>v!=null).sort((a,b)=>a-b); if(!vs.length) return [0,1];
+  return [vs[Math.floor(vs.length*.03)], vs[Math.floor(vs.length*.97)]]; }
+function styleAll(){
+  if(!M) return;
+  const z = map.getZoom(), near = z>=ZB, blk = css('--block'), fg = css('--fg'), x=IB[curK], R_=x.d?BRAMP:RAMP;
+  const [lo,hi] = rangeOf(M.HEX), [bl,bh] = near ? rangeOf(M.BLOCKS.filter(b=>b.full)) : [0,1];
+  M.HEX.forEach(h=>{ h.lyr.options.interactive = !near; const v=gap(x,V(h,curK));
+    h.lyr.setStyle(v==null || near ? {stroke:false,fillOpacity:0} : {stroke:true,color:css('--panel'),weight:.6,fillColor:mix(R_,(v-lo)/(hi-lo||1)),fillOpacity:OP.hex}); });
+  M.BLOCKS.forEach(b=>{ b.lyr.options.interactive = near;
+    if(near){ const v=gap(x,V(b,curK)); b.lyr.setStyle(v==null?{fillColor:blk,fillOpacity:OP.blk*.6}:{fillColor:mix(R_,(v-bl)/(bh-bl||1)),fillOpacity:STANDALONE?.75:1}); }
+    else b.lyr.setStyle({fillColor:blk,fillOpacity:OP.blk}); });
+  M.TR.forEach(t=>{ t.lyr.options.interactive = near;
+    t.lyr.setStyle(near ? {color:fg, weight: t.c==='p'?3.5:t.c==='s'?2.6:2, opacity:.55} : {color:fg, weight: t.c==='p'?2.2:t.c==='s'?1.4:.6, opacity: t.c==='r'?.35:.6}); });
+  styleHL(!!pinned && pinned===shown);
+  $('zchip').textContent = near ? 'Manzanos coloreados uno por uno: toca un manzano o una calle' : 'Acércate para ver cada manzano y cada calle';
+  const [a,b] = near ? [bl,bh] : [lo,hi];
+  const ends = x.d ? [`${pfmt(a)} · menor brecha`, `${pfmt(b)} · mayor`] : x.cnt ? [fmt(a), fmt(b)+(near?' por manzano':' por zona')] : [pfmt(a), pfmt(b)];
+  $('legend').innerHTML = `<div class="ramp" style="background:linear-gradient(90deg,${R_.join(',')})"></div><div class="ends"><span>${ends[0]}</span><span>${ends[1]}</span></div>`;
+  $('inddesc').textContent = x.d ? `El color muestra la brecha: % ${x.b}. Más oscuro es peor. Promedio de ${M.meta.municipio}: ${pfmt(gap(x,V(M.CITY,curK)))}; departamento: ${pfmt(gap(x,DEPV[curK]??null))}.`
+    : x.cnt ? `Cantidad de personas en cada ${near?'manzano':'zona de ~23 ha'}.` : `Promedio de ${M.meta.municipio}: ${pfmt(V(M.CITY,curK))}; departamento: ${pfmt(DEPV[curK]??null)}.`;
+}
+function drawLabels(){ if(!M) return; const z=map.getZoom(), b=map.getBounds().pad(.2);
+  M.LBL.forEach(l=>{ const on = z>=l.z && b.contains(l.ll); if(on&&!l.on){gLbl.addLayer(l.m);l.on=true;} else if(!on&&l.on){gLbl.removeLayer(l.m);l.on=false;} }); }
+map.on('zoomend',()=>{ showMinor(); styleAll(); drawLabels(); });
+map.on('moveend',drawLabels);
+
+// ---------- Selección ----------
+let lastPick=0;
+function hover(it){ if(!pinned) show(it); }
+function pick(it,e){ lastPick=Date.now(); pin(it, e && e.latlng ? [e.latlng.lat, e.latlng.lng] : null); }
+function pin(it, pt){ pinned=it; PT = pt || it.cen || null; show(it); }
+function unpin(){ pinned=null; PT=null; map.removeLayer(ring); map.removeLayer(ptDot); clearHL(); show(M.CITY); }
+map.on('click',e=>{ if(!M || Date.now()-lastPick<60) return;   // clic fuera de manzanos y calles: la zona más cercana
+  const p=[e.latlng.lat,e.latlng.lng]; let best=null,bd=1e9; M.HEX.forEach(h=>{ const d=dist(h.cen,p); if(d<bd){bd=d;best=h;} });
+  if(best && bd<400) pin(best,p); });
+const titleOf = it => it.kind==='mun' ? `Municipio de ${M.meta.municipio}` : it.kind==='barrio' ? esc(it.name) : it.kind==='calle' ? esc(M.TN[it.n])
+  : it.kind==='tramo' ? esc(M.TN[it.n]) : (it.kind==='hex' ? (M.place(it.n).near?'Zona cerca de ':'Zona ') : (M.place(it.n).near?'Manzano cerca de ':'Manzano en ')) + esc(M.place(it.n).t);
+function subOf(it){
+  if(it.kind==='mun') return `${fmt(M.meta.zonas)} zonas · ${fmt(M.BARRIOS.length)} barrios y localidades con ficha`;
+  if(it.kind==='barrio') return `Barrio o localidad · ${it.bl.length} manzanos`;
+  if(it.kind==='calle') return `Toda la calle · ${it.ts.length} tramo${it.ts.length===1?'':'s'} · manzanos que le dan frente`;
+  if(it.kind==='tramo'){ const a=it.a>=0?M.TN[it.a]:null, b=it.b>=0?M.TN[it.b]:null; return (a&&b&&a!==b ? `entre ${esc(a)} y ${esc(b)}` : a||b ? `esquina ${esc(a||b)}` : 'tramo') + ` · ${it.mz} manzano${it.mz===1?'':'s'} de frente`; }
+  if(it.kind==='hex') return `Zona de ~23 ha · ${fmt(it.mz)} manzanos`;
+  return `Manzano ${esc(it.c)}`;
+}
+function highlight(it){
+  clearHL();
+  if(it.kind==='mun') return;
+  if(it.kind==='tramo'){ const ll=(M.streets[it.n]||[]).map(t=>t.ll); stLine.setLatLngs(ll); stHalo.setLatLngs(ll); hlLine.setLatLngs(it.ll); hlLineHalo.setLatLngs(it.ll); return; }
+  if(it.kind==='calle'){ const ll=it.ts.map(t=>t.ll); stLine.setLatLngs(ll); stHalo.setLatLngs(ll); return; }
+  const sel = it.kind==='hex' ? it.ll : it.kind==='barrio' ? it.bl.map(b=>b.lyr.getLatLngs()) : it.lyr.getLatLngs();
+  hl.setLatLngs(sel); hlHalo.setLatLngs(sel);
+}
+
+// ---------- Ficha ----------
+const SVC = [['hospital','Centros de salud y hospitales'],['farmacia','Farmacias'],['escuela','Unidades educativas'],['guarderia','Guarderías y kínderes'],
+  ['universidad','Universidades e institutos'],['mercado','Mercados'],['supermercado','Supermercados'],['banco','Bancos'],['plaza','Plazas'],['terminal','Terminales']];
+function pyramid(o){
+  const B=[['60omas','60+'],['40a59','40–59'],['20a39','20–39'],['0a19','0–19']];
+  const tot = sumk(o,AGE_ALL)||1; const mx = Math.max(...B.flatMap(([b])=>[o['e'+b+'_h'],o['e'+b+'_m']]))/tot||1;
+  return '<div class="pyr">'+B.map(([b,l])=>{const h=o['e'+b+'_h']/tot, m=o['e'+b+'_m']/tot;
+    return `<div class="l"><i style="width:${h/mx*100}%" title="Hombres ${Math.round(h*100)}%"></i></div><div class="lab">${l}</div><div class="r"><i style="width:${m/mx*100}%" title="Mujeres ${Math.round(m*100)}%"></i></div>`;}).join('')+
+    '</div><div class="pyrk"><span>Hombres</span><span>Mujeres</span></div>';
+}
+function stack(o){
+  const P=[['edu_ninguno','Ninguno','#d9c9a3'],['edu_prim','Primaria','#b7cfa0'],['edu_sec','Secundaria','#5fae84'],['edu_sup','Superior','#0f6b62']];
+  const t=sumk(o,P.map(p=>p[0]))||1;
+  return `<div class="stack">${P.map(([k,,c])=>`<span style="width:${o[k]/t*100}%;background:${c}"></span>`).join('')}</div>
+   <div class="stackk">${P.map(([k,l,c])=>`<span><i style="background:${c}"></i>${l} ${Math.round(o[k]/t*100)}%</span>`).join('')}</div>`;
+}
+function cmpTable(it, rowsOut){
+  const mun = it.kind==='mun';
+  let h = `<table class="cmp"><thead><tr><th>Indicador</th><th>${mun?'Municipio':'Aquí'}</th>${mun?'':'<th>Municipio</th>'}<th>Depto.</th></tr></thead><tbody>`;
+  for(const [t,tl] of TEMAS){
+    const xs = IND.filter(x=>x.t===t && !x.cnt); h += `<tr class="grp"><td colspan="${mun?3:4}">${tl}</td></tr>`;
+    for(const x of xs){ const v=V(it,x.k), c=V(M.CITY,x.k), d=DEPV[x.k]??null, ref = mun?d:c;
+      let cls='', mark='';
+      if(x.d && v!=null && ref!=null){ const dd=(v-ref)*x.d; if(dd<=-10){cls=' bad'; mark='<i>▼</i>';} else if(dd>=10){cls=' good'; mark='<i>▲</i>';} }
+      h += `<tr${x.k===curK?' class="on"':''}><td>${x.l}</td><td class="v${cls}">${pfmt(v)}${mark}</td>${mun?'':`<td class="a">${pfmt(c)}</td>`}<td class="a">${pfmt(d)}</td></tr>`;
+      rowsOut.push([tl, x.l, v, mun?null:c, d]); } }
+  return h+'</tbody></table>';
+}
+function aroundHTML(pt){
+  const bl = M.BLOCKS.filter(b=>dist(b.cen,pt)<=R), o = agg(bl), ha = Math.PI*R*R/1e4;
+  const est = k => o[k]==null ? 's/d' : fmt(o.personas*o[k]/100);
+  let h = `<div class="fs"><div class="radhead"><h3>Alrededor de este punto</h3><div class="tabs" role="group" aria-label="Radio">${[500,1000,2000].map(r=>`<button type="button" data-r="${r}" aria-pressed="${r===R}">${r<1000?r+' m':r/1000+' km'}</button>`).join('')}</div></div>`;
+  h += `<div class="big b3"><div><b>${fmt(o.personas)}</b><span>personas</span></div><div><b>${fmt(o.viviendas)}</b><span>viviendas</span></div><div><b>${fmt(o.personas/ha)}</b><span>hab. por ha</span></div></div>`;
+  h += `<table class="svc" style="margin-top:8px"><tr><td>Niños y jóvenes de 0 a 19 años</td><td class="n">${est('sh0_19')}</td></tr><tr><td>Adultos de 60 años o más</td><td class="n">${est('sh60')}</td></tr>`+
+       `<tr><td>Personas sin agua por cañería</td><td class="n">${o.sh_agua==null?'s/d':fmt(o.personas*(100-o.sh_agua)/100)}</td></tr><tr><td>Personas sin alcantarillado</td><td class="n">${o.sh_alc==null?'s/d':fmt(o.personas*(100-o.sh_alc)/100)}</td></tr>`+
+       `<tr><td>Personas sin ningún seguro de salud</td><td class="n">${est('sh_sinseg')}</td></tr></table><p class="hint" style="margin-top:4px">Estimaciones aproximadas con los manzanos de ${esc(M.meta.municipio)} dentro del círculo.</p></div>`;
+  if(CERCA){
+    h += `<div class="fs"><h3>Servicios y equipamiento a ${R<1000?R+' m':R/1000+' km'}</h3><table class="svc">`;
+    for(const [k,l] of SVC){ const pts=CERCA.cats[k]||[]; let n=0, best=null, bd=1e9;
+      for(const p of pts){ const d=dist(pt,p); if(d<=R) n++; if(d<bd){bd=d;best=p;} }
+      h += `<tr><td>${l}${best?`<small>Más cercano: ${esc(best[2]||'sin nombre registrado')}, a ${dtxt(bd)}</small>`:''}</td><td class="n">${n}</td></tr>`; }
+    h += `</table><p class="hint" style="margin-top:4px">De OpenStreetMap, que no registra todos los servicios. Distancias en línea recta.</p></div>`;
+  }
+  return h;
+}
+function show(it){
+  if(!M) return;
+  shown = it; const isPin = pinned===it, f=$('ficha'), o=it.o, full=hasFicha(it), rows=[];
+  highlight(it); styleHL(isPin);
+  if(isPin && PT){ ring.setLatLng(PT).setRadius(R).addTo(map); ptDot.setLatLng(PT).addTo(map); } else { map.removeLayer(ring); map.removeLayer(ptDot); }
+  const title = titleOf(it);
+  let h = `<div class="fh"><div><div class="t">${title}${isPin?'<span class="pin">Fijada</span>':''}</div><div class="sub">${subOf(it)}</div></div>${isPin?'<button class="xbtn" id="unpin" type="button" aria-label="Soltar la ficha">✕</button>':''}</div>`;
+  h += `<p class="hint">${it.kind==='mun' ? 'Pasa el mouse o toca el mapa para ver la ficha de un lugar.' : isPin ? 'Toca otro lugar para cambiarlo, o suelta la ficha para volver al municipio.' : 'Haz clic o toca para fijar esta ficha y ver lo que hay alrededor.'}</p>`;
+  h += `<div class="big"><div><b>${fmt(o.personas)}</b><span>personas${it.kind==='calle'||it.kind==='tramo'?' en los manzanos de frente':''}</span></div><div><b>${fmt(o.viviendas)}</b><span>viviendas</span></div></div>`;
+  rows.push(['Lugar', title.replace(/<[^>]+>/g,'').replace(/&amp;/g,'&'), subOf(it).replace(/<[^>]+>/g,'')], ['Personas', '', o.personas], ['Viviendas', '', o.viviendas]);
+  if(it.kind==='tramo') h += `<button type="button" class="linkbtn" id="vercalle">Ver la ficha de toda la calle</button>`;
+  if(!full){ h += `<p class="hint">Este manzano tiene pocas personas y el INE no publica su ficha detallada por privacidad.</p>`; }
+  else {
+    h += `<div class="fs"><h3>Cómo se compara</h3><div class="fkey"><span><span class="down">▼</span> 10 puntos o más peor que ${it.kind==='mun'?'el departamento':'el municipio'}</span><span><span class="up">▲</span> 10 o más mejor</span></div>${cmpTable(it, rows)}</div>`;
+    if(sumk(o,AGE_ALL)) h += `<div class="fs"><h3>Edad y sexo</h3>${pyramid(o)}</div>`;
+    if(sumk(o,EDU_ALL)) h += `<div class="fs"><h3>Nivel educativo</h3>${stack(o)}</div>`;
+  }
+  if(isPin && PT && it.kind!=='mun') h += aroundHTML(PT);
+  if(STANDALONE || DL) h += `<div class="factions"><button type="button" class="btn" id="csv">Descargar ficha (CSV)</button></div>`;
+  f.innerHTML = h; lastRows = rows;
+  const u=$('unpin'); if(u) u.onclick=unpin;
+  const vc=$('vercalle'); if(vc) vc.onclick=()=>{ const s=M.STREETS[it.n]; map.flyToBounds(L.featureGroup(s.ts.map(t=>t.lyr)).getBounds(),{padding:[40,40],maxZoom:17,duration:.7}); pin(s); };
+  f.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ R=+b.dataset.r; show(it); });
+  const cb=$('csv'); if(cb) cb.onclick=()=>downloadCSV(title.replace(/<[^>]+>/g,'').replace(/&amp;/g,'&'));
+}
+async function downloadCSV(name){
+  const q = s => s==null ? '' : /[",;\n]/.test(String(s)) ? '"'+String(s).replace(/"/g,'""')+'"' : String(s);
+  const n = v => v==null ? '' : typeof v==='number' ? (Math.round(v*10)/10).toString() : v;
+  const lines = ['tema,indicador,valor,promedio_municipio,promedio_departamento'];
+  for(const r of lastRows){ if(r.length===3) lines.push([q(r[0]),q(r[1]),q(n(r[2])),'',''].join(',')); else lines.push([q(r[0]),q(r[1]),n(r[2]),n(r[3]),n(r[4])].join(',')); }
+  lines.push('', q('Fuente: INE, Censo de Población y Vivienda 2024 (fichas por manzano, atlasurbano). Porcentajes de barrios y calles ponderados por población.'));
+  const data = '﻿'+lines.join('\n'), file = 'ficha_censo2024_'+norm(name).replace(/[^a-z0-9]+/g,'_').slice(0,60)+'.csv';
+  if(DL){ try{ await DL.save({filename:file, data}); }catch(e){ if(e && e.code && !['declined','rate_limited'].includes(e.code)){ const cb=$('csv'); if(cb) cb.disabled=true; } } return; }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'})); a.download=file; document.body.appendChild(a); a.click(); a.remove();
+}
+
+// ---------- Panel: temas, indicador y brechas ----------
+function drawTemas(){
+  $('temas').innerHTML = TEMAS.map(([k,l])=>`<button type="button" data-t="${k}" aria-pressed="${k===curT}">${l}</button>`).join('');
+  [...$('temas').children].forEach(b=>b.onclick=()=>{ curT=b.dataset.t; const first=IND.find(x=>x.t===curT && x.d) || IND.find(x=>x.t===curT); curK=first.k; drawTemas(); refresh(); });
+  $('indvar').innerHTML = IND.filter(x=>x.t===curT).map(x=>`<option value="${x.k}">${x.cnt?x.l+' (personas)':'% '+x.l.charAt(0).toLowerCase()+x.l.slice(1)}</option>`).join('');
+  $('indvar').value = curK;
+}
+$('indvar').onchange=e=>{ curK=e.target.value; refresh(); };
+function rankList(){
+  const x=IB[curK];
+  let items = rankBy==='barrios' ? M.BARRIOS.filter(b=>b.o.pf>=300) : rankBy==='zonas' ? M.HEX.filter(h=>h.o.personas>=300) : Object.values(M.STREETS).filter(s=>s.o.personas>=200);
+  items = items.map(it=>{ const v=V(it,curK); if(v==null) return null; const g=gap(x,v);
+    return {it, v, g, aff: x.cnt ? v : it.o.personas*g/100}; }).filter(Boolean);
+  const byAff = x.cnt || sortBy==='aff';
+  items.sort((a,b)=> byAff ? b.aff-a.aff : b.g-a.g);
+  return items.slice(0,10);
+}
+function drawRank(){
+  const x=IB[curK], unit = rankBy==='barrios'?'barrios':rankBy==='zonas'?'zonas':'calles';
+  ['barrios','zonas','calles'].forEach(k=>$('r-'+k).setAttribute('aria-pressed',k===rankBy));
+  $('s-aff').setAttribute('aria-pressed', sortBy==='aff'); $('s-pct').setAttribute('aria-pressed', sortBy==='pct'); $('sortbox').hidden = !!x.cnt;
+  $('rankh').textContent = x.d ? `Dónde está la mayor brecha` : x.cnt ? `Dónde viven más` : `Dónde es más alto`;
+  const top = rankList();
+  $('rank').innerHTML = top.map(({it,v,g,aff})=>{
+    const nm = it.kind==='barrio'?it.name : it.kind==='calle'?M.TN[it.n] : M.placeTxt(it.n);
+    const main = x.cnt ? fmt(v) : sortBy==='aff' ? fmt(aff) : pfmt(g);
+    const sub = x.cnt ? 'personas' : sortBy==='aff' ? pfmt(g) : fmt(aff)+' pers.';
+    return `<li tabindex="0"><div class="d">${esc(nm)}<small>${fmt(it.o.personas)} personas${it.kind==='calle'?' de frente':''}</small></div><span class="s">${main}<small>${sub}</small></span></li>`; }).join('')
+    || '<li><div class="d">Sin datos para este indicador.</div></li>';
+  $('rankhint').textContent = x.cnt ? `Las 10 ${unit} con más ${x.l.toLowerCase()}.` :
+    x.d ? (sortBy==='aff' ? `Las 10 ${unit} con más personas ${x.b} (estimado), y su porcentaje.` : `Las 10 ${unit} con el mayor porcentaje ${x.b}, y cuántas personas son.`)
+    : (sortBy==='aff' ? `Las 10 ${unit} con más personas en esta situación (estimado).` : `Las 10 ${unit} con el porcentaje más alto.`);
+  [...$('rank').children].forEach((li,i)=>{ if(!top[i]) return; const go=()=>{ const it=top[i].it;
+      const bnd = it.kind==='barrio' ? L.featureGroup(it.bl.map(b=>b.lyr)).getBounds() : it.kind==='calle' ? L.featureGroup(it.ts.map(t=>t.lyr)).getBounds() : it.lyr.getBounds();
+      map.flyToBounds(bnd,{maxZoom:16, padding:[40,40], duration:.6}); pin(it); };
+    li.onclick=go; li.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } }; });
+}
+['barrios','zonas','calles'].forEach(k=>$('r-'+k).onclick=()=>{ rankBy=k; drawRank(); });
+$('s-aff').onclick=()=>{ sortBy='aff'; drawRank(); }; $('s-pct').onclick=()=>{ sortBy='pct'; drawRank(); };
+function refresh(){ if(!M) return; $('indvar').value=curK; styleAll(); drawRank(); show(pinned || M.CITY); }
+
+// ---------- Búsqueda ----------
+function goSearch(){
+  if(!M) return; const q=norm($('q').value); if(!q){ $('qmsg').textContent=''; return; }
+  const key = t=>norm(t).replace(/^(avenida|av\.?|calle|c\.|pasaje|psje\.?|plaza|barrio|urbanizacion|villa)\s+/,'');
+  const qk = key($('q').value);
+  const all = Object.keys(M.streets).map(n=>['c', M.TN[n], +n]).concat(Object.keys(M.BAR).map(n=>['b',n]));
+  const words = qk.split(/\s+/).filter(w=>w.length>2);
+  const hit = all.find(x=>norm(x[1])===q) || all.find(x=>key(x[1])===qk) || all.find(x=>key(x[1]).startsWith(qk)) || all.find(x=>norm(x[1]).includes(q))
+    || (words.length ? all.filter(x=>{ const n=norm(x[1]); return words.every(w=>n.includes(w)); }).sort((a,b)=>(a[0]==='b'?0:1)-(b[0]==='b'?0:1) || (M.BYNAME[b[1]]?.o.personas||0)-(M.BYNAME[a[1]]?.o.personas||0))[0] : null);
+  if(!hit){ $('qmsg').textContent='No encontré ese barrio o calle en este municipio. Prueba con otra parte del nombre.'; return; }
+  if(hit[0]==='c'){ const s=M.STREETS[hit[2]]; map.flyToBounds(L.featureGroup(s.ts.map(t=>t.lyr)).getBounds(),{padding:[30,30],maxZoom:17,duration:.7}); pin(s);
+    $('qmsg').textContent = `${M.TN[hit[2]]}: ${s.ts.length} tramo${s.ts.length===1?'':'s'}. La ficha suma los manzanos que le dan frente.`; return; }
+  const b = M.BYNAME[hit[1]];
+  if(b){ map.flyToBounds(L.featureGroup(b.bl.map(x=>x.lyr)).getBounds(),{padding:[40,40],maxZoom:16.5,duration:.7}); pin(b); $('qmsg').textContent = `${hit[1]}: ${b.bl.length} manzanos.`; return; }
+  const [la,lo] = M.BAR[hit[1]][0]; map.flyTo([la,lo],15.5,{duration:.7});
+  let best=null, bd=1e9; M.HEX.forEach(h=>{ const d=dist(h.cen,[la,lo]); if(d<bd){bd=d;best=h;} });
+  if(best) pin(best,[la,lo]); $('qmsg').textContent = `${hit[1]}: sin manzanos asignados; te muestro la zona más cercana.`;
+}
+$('q').addEventListener('change',goSearch);
+$('q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); goSearch(); } });
+$('mun').onchange=e=>loadMun(e.target.value);
+const retheme=()=>{ setBasemap(); restyleBase(); styleAll(); };
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',retheme);
+new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+window.addEventListener('hashchange',()=>{ const s=location.hash.slice(1); if(s && (!M || s!==M.meta.slug) && IDX.municipios.some(m=>m.slug===s)) loadMun(s); });
+
+fetch('../datos/cerca.json').then(r=>r.ok?r.json():null).then(d=>{ CERCA=d; if(pinned) show(pinned); }).catch(()=>{});
+(async()=>{ if(STANDALONE || !window.claude?.use) return; try{ DL = await window.claude.use('downloads'); }catch(e){ DL=null; } if(DL && shown) show(shown); })();
+drawTemas();
+const start = location.hash.slice(1);
+loadMun(IDX.municipios.some(m=>m.slug===start) ? start : 'cochabamba');
+</script>
+
+</body>
+</html>

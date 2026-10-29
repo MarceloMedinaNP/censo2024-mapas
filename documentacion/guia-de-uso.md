@@ -11,6 +11,17 @@ Cómo usar el mapa "Oportunidades Cochabamba" y cómo mostrarlo en una reunión 
 
 El enlace guarda el municipio: `…#sacaba`, `…#quillacollo`, etc.
 
+## Las otras dos versiones
+
+| Versión | Para quién | Dentro de Claude | Pública |
+| --- | --- | --- | --- |
+| Atlas municipal | Alcaldías, gobernación, ONG | https://claude.ai/artifact/GdZiYtT57Y9XVEPuZuQ8ZX | https://marcelomedinanp.github.io/censo2024-mapas/atlas/ |
+| Buscador cercano | Público en general | https://claude.ai/artifact/5MZ3pJeBmExrn1kHrif1QB | https://marcelomedinanp.github.io/censo2024-mapas/cerca/ |
+
+**Atlas municipal (demostración de 3 minutos).** Elegir el tema Servicios y el indicador agua por cañería: el mapa pinta la brecha, más oscuro es peor. El ranking "Dónde está la mayor brecha" lista los barrios con más personas sin agua (o, con el botón %, los de mayor porcentaje). Tocar el primero: la ficha compara 30 indicadores con el municipio y el departamento (▼ marca 10 puntos o más peor) y, abajo, cuenta la población, las personas sin agua o sin seguro, y los centros de salud, escuelas y mercados en un radio de 500 m, 1 km o 2 km. "Descargar ficha (CSV)" baja todo para un informe. Acercándose, cada manzano se pinta por separado.
+
+**Buscador cercano.** Elegir qué se busca (farmacia, centro de salud, dentista, veterinaria, taller, mercado, banco y otros 11), y luego "Mi ubicación", escribir un barrio o calle, o tocar el mapa; el punto azul se puede arrastrar. La lista muestra los 10 más cercanos con distancia, tiempo aproximado y "Cómo llegar" (abre la ruta en Google Maps). El GPS del celular funciona en la versión pública; dentro de Claude no hay acceso a la ubicación. El enlace guarda la búsqueda: `…/cerca/#farmacia/-17.39350,-66.15700`.
+
 ## El recorrido guiado
 
 El botón **Recorrido guiado** recorre 14 pasos y en cada uno hace la acción en el mapa. Se avanza con "Siguiente" o con las flechas del teclado; Esc lo cierra. Es la forma más rápida de mostrar la herramienta a alguien.

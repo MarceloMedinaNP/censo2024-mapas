@@ -1,0 +1,230 @@
+<div class="cer">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Departamento de Cochabamba</div>
+      <h1>¿Qué necesitas cerca?</h1>
+      <p class="lead" style="margin-top:4px">Elige qué buscas y dónde estás: te muestro los lugares más cercanos y cómo llegar.</p>
+    </div>
+    <div class="cats" id="cats" role="group" aria-label="Qué buscas"></div>
+    <div class="where">
+      <button type="button" class="btn primary" id="gps"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>Mi ubicación</button>
+      <div><label for="q" class="sr">Tu barrio o calle</label><input id="q" list="qlist" placeholder="o escribe tu barrio o calle" autocomplete="off"><datalist id="qlist"></datalist></div>
+      <p class="wmsg" id="wmsg" aria-live="polite">También puedes tocar el mapa o arrastrar el punto azul.</p>
+    </div>
+  </div>
+  <div class="mapwrap">
+    <div id="map" role="region" aria-label="Mapa"></div>
+    <div class="hintmap" id="hintmap">Toca el mapa para cambiar tu punto</div>
+  </div>
+  <section class="results" aria-live="polite">
+    <div class="reshead"><h2 id="resh"></h2><p id="ress"></p></div>
+    <ol class="near" id="list"></ol>
+    <div class="foot">
+      <p>Distancias en línea recta desde tu punto; los tiempos son aproximados. "Cómo llegar" abre la ruta en Google Maps.</p>
+      <p>Los lugares vienen de OpenStreetMap, que no registra todos los negocios ni sus horarios. ¿Falta uno? <a id="osmedit" href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Agrégalo en OpenStreetMap</a> y aparecerá en la próxima actualización.</p>
+      <p>Datos: © colaboradores de OpenStreetMap (ODbL). Proyecto Mapas y Censo 2024.</p>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+const IDX = /*INDICE*/;
+const $ = id => document.getElementById(id);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm = t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+const STANDALONE = /*STANDALONE*/false;   // true en la versión pública: teselas de OpenStreetMap y GPS del navegador
+const KX=111320*Math.cos(17.4*Math.PI/180), KY=110574;
+const dist=(a,b)=>Math.hypot((a[1]-b[1])*KX,(a[0]-b[0])*KY);
+const dtxt = m => m>=1000 ? (m/1000).toFixed(1).replace('.',',')+' km' : Math.round(m/10)*10+' m';
+const mins = m => { if(m>2500){ const t=Math.max(5,Math.round(m*1.3/400/5)*5); return `unos ${t} min en vehículo`; } const t=Math.max(1,Math.round(m*1.3/75)); return `${t} min a pie`; };
+
+// g: género del plural (para "más cercanos/as")
+const CATS = [
+  ['farmacia','Farmacia','Farmacias','Farmacia'],['hospital','Centro de salud','Centros de salud y hospitales','Centro de salud'],['dentista','Dentista','Consultorios dentales','Consultorio dental'],
+  ['veterinaria','Veterinaria','Veterinarias y tiendas de mascotas','Veterinaria'],['taller','Taller mecánico','Talleres mecánicos y repuestos','Taller mecánico'],['ferreteria','Ferretería','Ferreterías','Ferretería'],
+  ['mercado','Mercado','Mercados y ferias','Mercado'],['supermercado','Supermercado','Supermercados','Supermercado'],['banco','Banco','Bancos','Banco'],
+  ['peluqueria','Peluquería','Peluquerías y salones de belleza','Peluquería'],['lavanderia','Lavandería','Lavanderías','Lavandería'],['gimnasio','Gimnasio','Gimnasios','Gimnasio'],
+  ['libreria','Librería','Librerías y papelerías','Librería'],['guarderia','Guardería','Guarderías y kínderes','Guardería'],['escuela','Unidad educativa','Unidades educativas','Unidad educativa'],
+  ['universidad','Universidad','Universidades e institutos','Universidad'],['terminal','Terminal','Terminales y paradas','Terminal'],['plaza','Plaza','Plazas','Plaza'],
+];
+const FEM = new Set(['farmacia','veterinaria','ferreteria','peluqueria','lavanderia','libreria','guarderia','escuela','universidad','terminal','plaza']);
+const CB = Object.fromEntries(CATS.map(c=>[c[0],{s:c[1],p:c[2],one:c[3],f:FEM.has(c[0])}]));
+let D=null, cat='farmacia', ME=[-17.3935,-66.157], NEAR=[], sel=-1, meSource='default';
+
+// ---------- Mapa ----------
+const map = L.map('map',{preferCanvas:true,zoomSnap:.25,zoomDelta:.5,maxZoom:19,minZoom:9});
+map.attributionControl.setPrefix('').addAttribution('© OpenStreetMap');
+let baseTiles=null;
+function setBasemap(){
+  if(!STANDALONE) return;
+  const dark = document.documentElement.dataset.theme==='dark' || (document.documentElement.dataset.theme!=='light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  if(baseTiles) map.removeLayer(baseTiles);
+  baseTiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'<a href="https://www.openstreetmap.org/copyright">Mapa</a>'}).addTo(map);
+  map.getContainer().classList.toggle('base-dark', dark);
+}
+setBasemap();
+map.createPane('basemap'); map.getPane('basemap').style.zIndex = 350; map.getPane('basemap').style.pointerEvents = 'none';
+const rendB = L.canvas({pane:'basemap', padding:.4}), rend = L.canvas({padding:.3});
+const gBase=L.layerGroup().addTo(map), gMinor=L.layerGroup(), gVias=L.layerGroup().addTo(map), gLbl=L.layerGroup().addTo(map);
+const gAll=L.layerGroup().addTo(map), gTop=L.layerGroup().addTo(map);
+const ring1 = L.circle(ME,{radius:500,interactive:false,fill:false,weight:1.2,dashArray:'4 5'}).addTo(map);
+const ring2 = L.circle(ME,{radius:1000,interactive:false,fill:false,weight:1.2,dashArray:'4 5'}).addTo(map);
+const lbl1 = L.marker(ME,{interactive:false,keyboard:false,icon:L.divIcon({className:'',html:'<div class="ringlbl">500 m</div>',iconSize:null})}).addTo(map);
+const lbl2 = L.marker(ME,{interactive:false,keyboard:false,icon:L.divIcon({className:'',html:'<div class="ringlbl">1 km</div>',iconSize:null})}).addTo(map);
+const meMk = L.marker(ME,{draggable:true,keyboard:false,zIndexOffset:2000,title:'Tu punto',icon:L.divIcon({className:'me-wrap',html:'<div class="me"></div>',iconSize:null})}).addTo(map);
+meMk.on('dragend',()=>{ const p=meMk.getLatLng(); setMe([p.lat,p.lng],'map'); });
+map.on('click',e=>setMe([e.latlng.lat,e.latlng.lng],'map'));
+function styleRings(){ [ring1,ring2].forEach(r=>r.setStyle({color:css('--sel')})); }
+function placeRings(){ [ring1,ring2,meMk].forEach(l=>l.setLatLng(ME)); lbl1.setLatLng([ME[0]+500/KY, ME[1]]); lbl2.setLatLng([ME[0]+1000/KY, ME[1]]); }
+
+// ---------- Fondo dibujado dentro de Claude: agua, verde, calles con y sin nombre ----------
+function decPoly(s){ const out=[]; let i=0, la=0, lo=0;
+  while(i<s.length){ const v=[0,0]; for(let k=0;k<2;k++){ let sh=0, r=0, b; do{ b=s.charCodeAt(i++)-63; r|=(b&31)<<sh; sh+=5; }while(b>=32); v[k]=(r&1)?~(r>>1):(r>>1); }
+    la+=v[0]; lo+=v[1]; out.push([la/1e5, lo/1e5]); }
+  return out; }
+const BASE_STY = {
+  agro:  t=>({fill:true, stroke:false, fillColor:css('--agro'), fillOpacity:1}),
+  bosque:t=>({fill:true, stroke:false, fillColor:css('--wood'), fillOpacity:1}),
+  verde: t=>({fill:true, stroke:false, fillColor:css('--green'), fillOpacity:1}),
+  aero:  t=>({fill:true, stroke:false, fillColor:css('--aero'), fillOpacity:1}),
+  agua:  t=>({fill:true, stroke:false, fillColor:css('--water'), fillOpacity:1}),
+  rio:   t=>({fill:false, color:css('--river'), weight: t==='r'?3:t==='c'?1.6:1.1, opacity:.9, lineCap:'round'}),
+  pista: t=>({fill:false, color:css('--rail'), weight:4, opacity:.6}),
+  tren:  t=>({fill:false, color:css('--rail'), weight:1.4, opacity:.9, dashArray:'6 4'}),
+  calle: t=>({fill:false, color:css('--minor'), weight:1, opacity:.9}),
+  via:   t=>({fill:false, color:css('--fg'), weight: t==='p'?3:t==='s'?2:1.3, opacity: t==='r'?.35:.55, lineCap:'round'}),
+};
+const LOADED={}, BASE=[], LBL=[];
+function loadAround(){
+  if(STANDALONE || !D || map.getZoom()<11.5) return;
+  const bb=map.getBounds().pad(.3);
+  D.municipios.forEach(m=>{ const b=m.b; if(LOADED[m.slug] || !bb.intersects([[b[1],b[0]],[b[3],b[2]]])) return; LOADED[m.slug]=1;
+    Promise.all([fetch(`datos/${m.slug}.base.json`).then(r=>r.ok?r.json():null).catch(()=>null), fetch(`datos/${m.slug}.vias.json`).then(r=>r.ok?r.json():null).catch(()=>null)])
+      .then(([base,vias])=>drawMun(base,vias)); });
+}
+function drawMun(base, vias){
+  if(base) for(const k of ['agro','bosque','verde','aero','agua','rio','pista','tren','calle']){
+    for(const e of (base[k]||[])){ const [enc,t] = Array.isArray(e)?e:[e,'']; const ll=decPoly(enc); if(ll.length<2) continue;
+      const area = ['agro','bosque','verde','aero','agua'].includes(k);
+      const lyr = (area?L.polygon:L.polyline)(ll, {renderer:rendB, interactive:false, ...BASE_STY[k](t)});
+      ((k==='calle' || (k==='rio' && t!=='r')) ? gMinor : gBase).addLayer(lyr); BASE.push([lyr,k,t]); } }
+  if(vias){ const best={};
+    for(const [n,c,enc] of vias.t){ const ll=decPoly(enc); if(ll.length<2) continue;
+      const lyr=L.polyline(ll,{renderer:rendB, interactive:false, ...BASE_STY.via(c)}); gVias.addLayer(lyr); BASE.push([lyr,'via',c]);
+      if(!best[n] || ll.length>best[n].ll.length) best[n]={ll,c}; }
+    Object.entries(best).forEach(([n,{ll,c}])=>{ const m=ll[Math.floor(ll.length/2)]; mkLbl(m, esc(vias.names[n].replace(/^Avenida /,'Av. ')), c==='p'?14:c==='s'?15.5:16.5, 'lbl-r'+(c==='p'?' t':'')); }); }
+  if(base) (base.rio_nombres||[]).forEach(([n,la,lo])=>mkLbl([la,lo], esc(n), 14, 'lbl-w'));
+  showMinor(); drawLabels();
+}
+function mkLbl(ll,html,z,cls){ LBL.push({z, ll, m:L.marker(ll,{interactive:false,keyboard:false,icon:L.divIcon({className:'',html:`<div class="lbl ${cls}">${html}</div>`,iconSize:null})})}); }
+function showMinor(){ const on = map.getZoom()>=14; if(on && !map.hasLayer(gMinor)) gMinor.addTo(map); else if(!on && map.hasLayer(gMinor)) map.removeLayer(gMinor); }
+function drawLabels(){ const z=map.getZoom(), b=map.getBounds().pad(.15);
+  LBL.forEach(l=>{ const on = z>=l.z && b.contains(l.ll); if(on&&!l.on){gLbl.addLayer(l.m);l.on=true;} else if(!on&&l.on){gLbl.removeLayer(l.m);l.on=false;} }); }
+map.on('moveend',()=>{ loadAround(); drawLabels(); }); map.on('zoomend',()=>{ showMinor(); drawAll(); });
+
+// ---------- Resultados ----------
+function barrioOf(p){ let b=null, bd=1e9, v=null, vd=1e9;
+  for(const x of D.idx){ if(x[1]==='c') continue; const d=dist(p,[x[2],x[3]]); if(x[1]==='b'){ if(d<bd){bd=d;b=x;} } else if(d<vd){vd=d;v=x;} }
+  const n = b && bd<900 ? b[0] : v && vd<3000 ? v[0] : null; const m = munOf(p);
+  return n && (!m || norm(n)!==norm(m.m)) ? n : null; }
+const munOf = p => { let best=null, bd=1e9; D.municipios.forEach(m=>{ const b=m.b; if(p[0]<b[1]||p[0]>b[3]||p[1]<b[0]||p[1]>b[2]) return; const d=dist(p,m.c); if(d<bd){bd=d;best=m;} }); return best; };
+function compute(){
+  const pts = D.cats[cat]||[];
+  NEAR = pts.map(p=>({p, d:dist(ME,p)})).sort((a,b)=>a.d-b.d).slice(0,10);
+  NEAR.forEach(x=>x.barrio = barrioOf(x.p));
+  return pts.reduce((s,p)=>s+(dist(ME,p)<=1000?1:0),0);
+}
+function drawAll(){
+  gAll.clearLayers(); if(!D) return;
+  const z=map.getZoom(), r = z>=15?4.5 : z>=13?3.5 : 2.5, top = new Set(NEAR.map(x=>x.p));
+  for(const p of (D.cats[cat]||[])){ if(top.has(p)) continue;
+    gAll.addLayer(L.circleMarker([p[0],p[1]],{renderer:rend,interactive:false,radius:r,weight:1,color:css('--panel'),fillColor:css('--comp'),fillOpacity:.75})); }
+}
+function drawTop(){
+  gTop.clearLayers();
+  NEAR.forEach((x,i)=>{ const m=L.marker([x.p[0],x.p[1]],{keyboard:false,zIndexOffset:i===sel?1500:1000-i,title:x.p[2]||CB[cat].one,
+      icon:L.divIcon({className:'',html:`<div class="pin-n${i===sel?' on':''}">${i+1}</div>`,iconSize:null})});
+    m.on('click',e=>{ L.DomEvent.stopPropagation(e); choose(i,true); }); gTop.addLayer(m); });
+}
+const gmaps = p => `https://www.google.com/maps/dir/?api=1&origin=${ME[0].toFixed(5)},${ME[1].toFixed(5)}&destination=${p[0].toFixed(5)},${p[1].toFixed(5)}&travelmode=walking`;
+function render(fit){
+  if(!D) return;
+  const n1 = compute(), c=CB[cat];
+  $('resh').textContent = `${c.p} más cercan${c.f?'as':'os'}`;
+  const m = munOf(ME), b = barrioOf(ME);
+  $('ress').textContent = (NEAR.length ? `${n1===0?(c.f?'Ninguna':'Ninguno'):n1} a menos de 1 km` + (n1===0?` · ${c.f?'la más cercana':'el más cercano'} está a ${dtxt(NEAR[0].d)}`:'') : 'No hay lugares registrados de este tipo.') +
+    ` · desde ${b?b+', ':''}${m?m.m:'tu punto'}`;
+  $('list').innerHTML = NEAR.map((x,i)=>{ const nm = x.p[2] ? esc(x.p[2]) : `${esc(c.one)} <span style="font-weight:400">sin nombre registrado</span>`;
+    return `<li data-i="${i}" tabindex="0"${i===sel?' class="on"':''}><span class="num">${i+1}</span><div><div class="nm${x.p[2]?'':' gen'}">${nm}</div><small><span class="dd">${dtxt(x.d)}</span> · ${mins(x.d)}${x.barrio?' · '+esc(x.barrio):''}</small></div><a class="go" href="${gmaps(x.p)}" target="_blank" rel="noopener">Cómo llegar</a></li>`; }).join('');
+  [...$('list').children].forEach(li=>{ const i=+li.dataset.i; li.onclick=e=>{ if(e.target.closest('a')) return; choose(i,true); };
+    li.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); choose(i,true); } }; });
+  $('osmedit').href = `https://www.openstreetmap.org/edit#map=18/${ME[0].toFixed(5)}/${ME[1].toFixed(5)}`;
+  drawAll(); drawTop(); placeRings();
+  if(fit && NEAR.length){ const pts = [ME, ...NEAR.slice(0,5).map(x=>[x.p[0],x.p[1]])];
+    map.flyToBounds(L.latLngBounds(pts).pad(.25),{maxZoom:16.5, duration:.6}); }
+  try{ history.replaceState(null,'',`#${cat}/${ME[0].toFixed(5)},${ME[1].toFixed(5)}`); }catch(e){}
+}
+function choose(i, pan){
+  sel=i; drawTop(); [...$('list').children].forEach((li,j)=>li.classList.toggle('on',j===i));
+  const x=NEAR[i]; if(!x) return;
+  if(pan) map.flyToBounds(L.latLngBounds([ME,[x.p[0],x.p[1]]]).pad(.35),{maxZoom:17.5,duration:.5});
+  const li=$('list').children[i]; if(li && innerWidth>860) li.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function setMe(p, src, fit){ ME=p; meSource=src; sel=-1; render(!!fit);
+  if(src==='map') $('wmsg').textContent='Punto marcado en el mapa. Arrastra el punto azul para ajustarlo.'; $('wmsg').classList.remove('err'); }
+
+// ---------- Categorías, GPS y búsqueda ----------
+function drawCats(){
+  $('cats').innerHTML = CATS.map(([k,s])=>`<button type="button" data-k="${k}" aria-pressed="${k===cat}">${s}</button>`).join('');
+  [...$('cats').children].forEach(b=>b.onclick=()=>{ cat=b.dataset.k; sel=-1; drawCats(); render(true); });
+  const on=$('cats').querySelector('[aria-pressed="true"]'); if(on && on.scrollIntoView && innerWidth<=860) on.scrollIntoView({inline:'nearest',block:'nearest'});
+}
+$('gps').onclick=()=>{
+  const msg=(t,err)=>{ $('wmsg').textContent=t; $('wmsg').classList.toggle('err',!!err); };
+  if(!navigator.geolocation){ msg('Este navegador no comparte la ubicación. Toca el mapa o escribe tu barrio.',true); return; }
+  msg('Buscando tu ubicación…'); $('gps').disabled=true;
+  navigator.geolocation.getCurrentPosition(pos=>{ $('gps').disabled=false;
+    const p=[pos.coords.latitude,pos.coords.longitude];
+    if(!munOf(p)){ msg('Tu ubicación está fuera del departamento de Cochabamba. Toca el mapa o escribe un barrio.',true); return; }
+    msg(`Ubicación encontrada (precisión de unos ${dtxt(pos.coords.accuracy||50)}).`); setMe(p,'gps',true);
+  }, err=>{ $('gps').disabled=false;
+    msg(err.code===1 ? (STANDALONE ? 'No diste permiso para usar tu ubicación. Toca el mapa o escribe tu barrio.' : 'Aquí no puedo leer tu ubicación. Toca el mapa o escribe tu barrio; en la versión pública del mapa, el botón usa el GPS del celular.')
+      : 'No pude obtener tu ubicación. Toca el mapa o escribe tu barrio.', true);
+  }, {enableHighAccuracy:true, timeout:12000, maximumAge:60000});
+};
+function goSearch(){
+  if(!D) return; const raw=$('q').value, q=norm(raw.split(' · ')[0]); if(!q) return;
+  const key = t=>norm(t).replace(/^(avenida|av\.?|calle|c\.|pasaje|psje\.?|plaza|barrio|urbanizacion|villa|zona)\s+/,'');
+  const qk=key(raw.split(' · ')[0]), mq = raw.includes(' · ') ? norm(raw.split(' · ')[1]) : null;
+  const pool = mq ? D.idx.filter(x=>norm(D.municipios[x[4]].m)===mq) : D.idx;
+  const rank = x => x[1]==='b'?0 : x[1]==='c'?1 : 2;
+  const words = qk.split(/\s+/).filter(w=>w.length>2);
+  const cands = pool.filter(x=>norm(x[0])===q).concat(pool.filter(x=>key(x[0])===qk), pool.filter(x=>key(x[0]).startsWith(qk)), pool.filter(x=>norm(x[0]).includes(q)), words.length ? pool.filter(x=>{ const n=norm(x[0]); return words.every(w=>n.includes(w)); }) : []);
+  if(!cands.length){ $('wmsg').textContent='No encontré ese lugar. Prueba con otra parte del nombre o toca el mapa.'; $('wmsg').classList.add('err'); return; }
+  const first = cands[0], same = cands.filter(x=>norm(x[0])===norm(first[0]));
+  const hit = same.sort((a,b)=>rank(a)-rank(b) || dist(ME,[a[2],a[3]])-dist(ME,[b[2],b[3]]))[0];
+  $('wmsg').classList.remove('err');
+  $('wmsg').textContent = `${hit[0]} · ${D.municipios[hit[4]].m}` + (same.length>1 ? ` (hay ${same.length} lugares con ese nombre; elige uno de la lista para precisar).` : '');
+  setMe([hit[2],hit[3]],'search',true);
+}
+$('q').addEventListener('change',goSearch);
+$('q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); goSearch(); } });
+const retheme=()=>{ setBasemap(); for(const [l,k,t] of BASE) l.setStyle(BASE_STY[k](t)); styleRings(); drawAll(); };
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',retheme);
+new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+// ---------- Inicio ----------
+const h = location.hash.slice(1).split('/');
+if(CB[h[0]]) cat=h[0];
+if(h[1]){ const [a,b]=h[1].split(',').map(Number); if(isFinite(a)&&isFinite(b)) ME=[a,b]; }
+drawCats(); styleRings(); placeRings();
+map.setView(ME, 15.5);
+fetch('datos/cerca.json').then(r=>r.json()).then(d=>{ D=d;
+  const seen=new Set(); const opts=[];
+  for(const x of D.idx){ const t=`${x[0]} · ${D.municipios[x[4]].m}`; if(!seen.has(t)){ seen.add(t); opts.push(t); } }
+  $('qlist').innerHTML = opts.sort((a,b)=>a.localeCompare(b,'es')).map(t=>`<option value="${esc(t)}"></option>`).join('');
+  render(true); loadAround();
+}).catch(()=>{ $('resh').textContent='No pude cargar los datos. Recarga la página.'; });
+</script>
