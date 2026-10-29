@@ -669,7 +669,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 :root{
   --bg:#f3f5f2; --panel:#ffffff; --fg:#1b2420; --muted:#5d6b64; --line:#dde3de;
   --accent:#0f7a54; --accent-soft:#e2f1ea; --block:#c9d1cb; --mapbg:#e9ede9;
-  --up:#0f7a54; --down:#b4472a; --bar:#9fb3a8; --comp:#c8325a;
+  --up:#0f7a54; --down:#b4472a; --bar:#9fb3a8; --comp:#c8325a; --sel:#2563c9;
   --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-data:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -677,11 +677,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#111614; --panel:#171e1b; --fg:#e4ebe7; --muted:#97a69e; --line:#2a3430;
   --accent:#3fc08c; --accent-soft:#1b3328; --block:#35413b; --mapbg:#141a17;
-  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; color-scheme:dark}}
+  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; --sel:#7fb0ff; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#111614; --panel:#171e1b; --fg:#e4ebe7; --muted:#97a69e; --line:#2a3430;
   --accent:#3fc08c; --accent-soft:#1b3328; --block:#35413b; --mapbg:#141a17;
-  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; color-scheme:dark}
+  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; --sel:#7fb0ff; color-scheme:dark}
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
 .app{display:grid;grid-template-columns:340px 1fr;height:100%}
@@ -805,6 +805,9 @@ path.pulse{animation:hlp .7s ease-out 2}
 ol.rank{margin-top:8px}
 .lbl-p{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.02em}
 #mun{font-weight:600}
+.streetbox{display:grid;grid-template-columns:18px 1fr;gap:4px 8px;align-items:start;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.streetbox .sw{width:18px;height:5px;border-radius:3px;background:var(--sel);margin-top:7px}
+.streetbox .linkbtn{grid-column:2;margin:0}
 </style>
 
 <div class="app">
@@ -963,6 +966,8 @@ map.createPane('sel'); map.getPane('sel').style.zIndex = 450; map.getPane('sel')
 const selR = L.svg({pane:'sel', padding:.5});
 const hlHalo = L.polygon([],{renderer:selR,interactive:false,fill:false,weight:7,lineJoin:'round'}).addTo(map);
 const hl = L.polygon([],{renderer:selR,interactive:false,fill:true,fillOpacity:0,weight:2.5,lineJoin:'round'}).addTo(map);
+const stHalo = L.polyline([],{renderer:selR,interactive:false,weight:10,lineCap:'round',lineJoin:'round'}).addTo(map);
+const stLine = L.polyline([],{renderer:selR,interactive:false,weight:5,lineCap:'round',lineJoin:'round'}).addTo(map);
 const hlLineHalo = L.polyline([],{renderer:selR,interactive:false,weight:11,lineCap:'round',lineJoin:'round'}).addTo(map);
 const hlLine = L.polyline([],{renderer:selR,interactive:false,weight:5,lineCap:'round',lineJoin:'round'}).addTo(map);
 function styleHL(p){
@@ -970,7 +975,10 @@ function styleHL(p){
   hlHalo.setStyle({color:css('--panel'), weight:p?8:5, opacity:p?.95:.7});
   hlLine.setStyle({color:css('--fg'), weight:p?5.5:4});
   hlLineHalo.setStyle({color:css('--panel'), weight:p?12:9, opacity:.95});
+  stLine.setStyle({color:css('--sel'), weight:p?5:4, opacity:.95});
+  stHalo.setStyle({color:css('--panel'), weight:p?10:8, opacity:.9});
 }
+function setStreet(n){ const ll = n==null ? [] : (M.streets[n]||[]).map(t=>t.ll); stLine.setLatLngs(ll); stHalo.setLatLngs(ll); }
 function pulseHL(){ for(const l of [hl,hlLine]){ const el=l.getElement(); if(!el) continue; el.classList.remove('pulse'); void el.getBoundingClientRect(); el.classList.add('pulse'); } }
 
 const RAMP = ['#f7f4c6','#cde8a2','#8fd18a','#45b07a','#1a8a6e','#0b6467','#103f5a'];
@@ -1005,7 +1013,7 @@ async function loadMun(slug){
 }
 
 function build(meta, mun, osm, calles){
-  pinned=null; shown=null;
+  pinned=null; shown=null; stLine.setLatLngs([]); stHalo.setLatLngs([]); hl.setLatLngs([]); hlHalo.setLatLngs([]); hlLine.setLatLngs([]); hlLineHalo.setLatLngs([]);
   [gBlocks,gHex,gTram,gComp,gLbl].forEach(g=>g.clearLayers());
   if(heat){ map.removeLayer(heat); heat=null; }
   const keys = mun.keys, obj = v=>{ const o={}; keys.forEach((k,i)=>o[k]=v[i]); return o; };
@@ -1174,8 +1182,8 @@ function nearestComp(pt){ let d=1e9; for(const p of M.comp[biz]) d=Math.min(d,di
 function show(it){
   if(!M) return;
   shown = it; const f=$('ficha'); const o=it.o; const isPin = pinned===it, T = it.kind==='tramo';
-  if(T){ hl.setLatLngs([]); hlHalo.setLatLngs([]); hlLine.setLatLngs(it.ll); hlLineHalo.setLatLngs(it.ll); }
-  else { hlLine.setLatLngs([]); hlLineHalo.setLatLngs([]); const sel = it.kind==='hex'?it.ll:it.lyr.getLatLngs(); hl.setLatLngs(sel); hlHalo.setLatLngs(sel); }
+  if(T){ hl.setLatLngs([]); hlHalo.setLatLngs([]); setStreet(it.n); hlLine.setLatLngs(it.ll); hlLineHalo.setLatLngs(it.ll); }
+  else { setStreet(null); hlLine.setLatLngs([]); hlLineHalo.setLatLngs([]); const sel = it.kind==='hex'?it.ll:it.lyr.getLatLngs(); hl.setLatLngs(sel); hlHalo.setLatLngs(sel); }
   styleHL(isPin);
   const hexI = it.kind==='hex'?it.i:it.h;
   let title, sub;
@@ -1187,7 +1195,8 @@ function show(it){
   let h = `<div class="fh"><div><div class="t">${title}${isPin?'<span class="pin">Fijada</span>':''}</div><div class="sub">${sub}</div></div>${isPin?'<button class="xbtn" id="unpin" type="button" aria-label="Soltar la ficha">✕</button>':''}</div>`;
   h += `<p class="hint">${isPin?'Toca otra zona o calle para cambiarla, o suelta la ficha para seguir el mouse.':'Haz clic o toca para fijar esta ficha.'} Los ▲▼ comparan con el promedio de ${esc(M.meta.municipio)}.</p>`;
   h += `<div class="big"><div><b>${fmt(o.personas)}</b><span>${T?'personas en los manzanos de frente':'personas'}</span></div><div><b>${fmt(o.viviendas)}</b><span>viviendas</span></div></div>`;
-  if(T) h += `<p class="hint">${VIA[it.c]}.</p>`;
+  if(T){ const ts=M.streets[it.n]; const pos = ts.slice().sort((a,b)=>M.OPPT[biz][b.i]-M.OPPT[biz][a.i]).indexOf(it)+1;
+    h += `<div class="streetbox"><span class="sw" aria-hidden="true"></span><div><b>Toda la calle: ${ts.length} tramo${ts.length===1?'':'s'}</b><br>${VIA[it.c]}. Este tramo es el ${pos}.º de ${ts.length} en oportunidad para ${esc(PROFILES[biz].n.toLowerCase())}.</div><button type="button" class="linkbtn" id="vercalle">Ver toda la calle</button></div>`; }
   if(hexI>=0 || T){
     const pn = PROFILES[biz].n.toLowerCase();
     const near = nearestComp(T?it.mid:(it.kind==='hex'?M.HC[it.i]:M.HC[hexI]));
@@ -1209,6 +1218,7 @@ function show(it){
   }
   f.innerHTML = h;
   const u=$('unpin'); if(u) u.onclick=unpin;
+  const vc=$('vercalle'); if(vc) vc.onclick=()=>map.flyToBounds(L.featureGroup(M.streets[it.n].map(t=>t.lyr)).getBounds(),{padding:[40,40],maxZoom:17,duration:.7});
 }
 function showStreet(n){
   const ts = M.streets[n]; if(!ts) return;
