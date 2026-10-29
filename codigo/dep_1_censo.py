@@ -52,7 +52,7 @@ C['ele_tot'] = S('energiaelectrica_'); C['ele_pub'] = S('energiaelectrica_servic
 C['ten_tot'] = S('viviendatenencia_'); C['ten_prop'] = S('viviendatenencia_propia'); C['ten_alq'] = S('viviendatenencia_', ['alquilada', 'anticretico'])
 C['ocu_tot'] = S('ocupacion_'); C['ocu_emp'] = S('ocupacion_empleado'); C['ocu_cp'] = S('ocupacion_cuentapropia')
 C['act_tot'] = S('actividad_')
-for k in ['comercio', 'enseñanza', 'construccion', 'agricultura']: C['act_' + k[:4]] = S('actividad_' + k)
+for k in ['comercio', 'enseñanza', 'construccion', 'agricultura', 'transporte']: C['act_' + k[:4]] = S('actividad_' + k)
 C['hog_tot'] = S('hogar_'); C['hog_unip'] = S('hogar_unipersonal'); C['hog_fam'] = S('hogar_', ['nuclearcompleto', 'monoparental'])
 C['nac_tot'] = S('nacimiento_'); C['nac_otro'] = S('nacimiento_', ['otromunicipio', 'otropais'])
 C['personas'] = m.personas; C['viviendas'] = m.viviendas
@@ -67,7 +67,7 @@ IND = {
  'sh_prop': (['ten_prop'], 'ten_tot'), 'sh_alq': (['ten_alq'], 'ten_tot'), 'sh_afil': (['afi_cp'], 'afi_tot'),
  'sh_sinseg': (['afi_nin'], 'afi_tot'), 'sh_farm': (['farm'], 'pers_f'), 'sh_emp': (['ocu_emp'], 'ocu_tot'),
  'sh_cp': (['ocu_cp'], 'ocu_tot'), 'sh_com': (['act_come'], 'act_tot'), 'sh_ens': (['act_ense'], 'act_tot'),
- 'sh_cons': (['act_cons'], 'act_tot'), 'sh_agri': (['act_agri'], 'act_tot'), 'sh_unip': (['hog_unip'], 'hog_tot'),
+ 'sh_cons': (['act_cons'], 'act_tot'), 'sh_agri': (['act_agri'], 'act_tot'), 'sh_trans': (['act_tran'], 'act_tot'), 'sh_unip': (['hog_unip'], 'hog_tot'),
  'sh_fam': (['hog_fam'], 'hog_tot'), 'sh_migr': (['nac_otro'], 'nac_tot'),
 }
 def shares(df):

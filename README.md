@@ -20,7 +20,7 @@ Actualizado: 28 de octubre de 2026 · Responsable: Marcelo (ThinkingIA)
 - 1.602.131 personas en 41.016 manzanos de 47 municipios.
 - 27.668 tramos de calle con ficha propia (de 34.765 tramos con nombre en OpenStreetMap), en 5.001 calles.
 - El 70% de la población del departamento vive frente a una calle con nombre: 86% en el municipio de Cochabamba, alrededor de 65% en Sacaba y Quillacollo, y entre 15% y 30% en municipios como Sipe Sipe, Puerto Villarroel o Arbieto, donde OpenStreetMap tiene menos calles nombradas.
-- Negocios registrados en OpenStreetMap: 447 farmacias, 303 ferreterías, 252 peluquerías, 136 librerías, 127 consultorios dentales, 88 veterinarias, 80 guarderías, 67 gimnasios y 56 lavanderías (nueve rubros).
+- Negocios registrados en OpenStreetMap: 517 talleres mecánicos y repuestos, 447 farmacias, 303 ferreterías, 252 peluquerías, 136 librerías, 127 consultorios dentales, 88 veterinarias, 80 guarderías, 67 gimnasios y 56 lavanderías (diez rubros).
 
 ## Cómo reconstruir
 

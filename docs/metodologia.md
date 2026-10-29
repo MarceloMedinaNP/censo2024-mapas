@@ -28,7 +28,7 @@ Todos se calculan como numerador / denominador sumados, de modo que se pueden ag
 | % caja de salud o seguro privado; % sin seguro | personas | personas con afiliación declarada |
 | % acude a farmacia sin receta | personas | personas con ficha |
 | % empleados; % cuenta propia | ocupados | ocupados |
-| % comercio, enseñanza, construcción | ocupados en la actividad | ocupados con actividad |
+| % comercio, enseñanza, construcción, agricultura, transporte | ocupados en la actividad | ocupados con actividad |
 | % hogares unipersonales; % con hijos (nuclear completo y monoparental) | hogares | hogares |
 
 **Poder adquisitivo** = promedio de los percentiles de educación superior, internet, piso de calidad y caja o seguro privado. El censo no pregunta ingresos; es una aproximación.
@@ -55,6 +55,7 @@ Un puntaje de 90 significa que la zona supera al 90% de las demás para ese rubr
 | Lavandería | hogares unipersonales 30, alquiler o anticrético 30, 20–39 años 20, población 20 |
 | Veterinaria | población 25, vivienda propia 25, hogares con hijos 20, poder adquisitivo 30 (el censo no pregunta por mascotas: casas propias y familias con hijos son la aproximación) |
 | Consultorio dental | población 30, poder adquisitivo 30, caja de salud o seguro privado 15, 0–19 años 10, 40 años o más 15 |
+| Taller mecánico | trabaja en transporte 30, población 30, poder adquisitivo 20, vivienda propia 20 (el censo no pregunta por autos: quienes trabajan en transporte son la mejor señal) |
 
 ## 5. Límites que hay que decir siempre
 

@@ -699,7 +699,7 @@ p.lead{margin:0;color:var(--muted);font-size:13.5px}
 .kpi b{display:block;font-family:var(--f-data);font-weight:500;font-size:15px;font-variant-numeric:tabular-nums}
 .kpi span{font-size:11.5px;color:var(--muted)}
 h2{font-family:var(--f-display);font-weight:700;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}
-.biz{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.biz{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .biz button{font:inherit;font-size:12.5px;text-align:left;padding:8px 8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
 .biz button:hover{border-color:var(--accent)}
 .biz button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel);font-weight:600}
@@ -921,7 +921,7 @@ const VARS = {
   sh_unip:{l:'% hogares unipersonales', f:o=>o.sh_unip}, sh_fam:{l:'% hogares con hijos', f:o=>o.sh_fam},
   sh_alq:{l:'% vivienda alquilada o anticrético', f:o=>o.sh_alq}, sh_prop:{l:'% vivienda propia', f:o=>o.sh_prop},
   sh_emp:{l:'% ocupados como empleados', f:o=>o.sh_emp}, sh_ens:{l:'% trabaja en enseñanza', f:o=>o.sh_ens},
-  sh_cons:{l:'% trabaja en construcción', f:o=>o.sh_cons}, sh_sinrev:{l:'% viviendas sin revoque', f:o=>o.sh_sinrev},
+  sh_cons:{l:'% trabaja en construcción', f:o=>o.sh_cons}, sh_trans:{l:'% trabaja en transporte', f:o=>o.sh_trans}, sh_sinrev:{l:'% viviendas sin revoque', f:o=>o.sh_sinrev},
 };
 const PROFILES = {
   farmacia:{n:'Farmacia', v:[['personas',30],['p60',25],['farm',15],['poder',30]]},
@@ -933,6 +933,8 @@ const PROFILES = {
   lavanderia:{n:'Lavandería', v:[['sh_unip',30],['sh_alq',30],['p20_39',20],['personas',20]]},
   // El censo no pregunta por mascotas: casas propias, hogares con hijos y poder adquisitivo son la mejor aproximación
   veterinaria:{n:'Veterinaria', v:[['personas',25],['sh_prop',25],['sh_fam',20],['poder',30]]},
+  // Sin datos de autos en el censo: quienes trabajan en transporte son la mejor señal de demanda
+  taller:{n:'Taller mecánico', s:'Taller mecánico', v:[['sh_trans',30],['personas',30],['poder',20],['sh_prop',20]]},
   dentista:{n:'Consultorio dental', s:'Dentista', v:[['personas',30],['poder',30],['sh_afil',15],['p0_19',10],['p40m',15]]},
 };
 const DEFAULTS = JSON.parse(JSON.stringify(PROFILES));
@@ -997,7 +999,7 @@ const IND_OPTS = [['personas','Personas',''],['sh0_19','% de 0 a 19 años','%'],
  ['sh_afil','% con caja de salud o seguro privado','%'],['sh_sinseg','% sin ningún seguro de salud','%'],['sh_farm','% que acude a farmacia sin receta','%'],
  ['sh_agua','% con agua por cañería','%'],['sh_alc','% con alcantarillado','%'],['sh_ele','% con electricidad de red pública','%'],
  ['sh_alq','% vivienda alquilada o anticrético','%'],['sh_unip','% hogares unipersonales','%'],['sh_fam','% hogares con hijos','%'],
- ['sh_emp','% ocupados como empleados','%'],['sh_cp','% trabajan por cuenta propia','%'],['sh_agri','% trabaja en agricultura','%'],
+ ['sh_emp','% ocupados como empleados','%'],['sh_cp','% trabajan por cuenta propia','%'],['sh_agri','% trabaja en agricultura','%'],['sh_trans','% trabaja en transporte','%'],
  ['sh_migr','% nacido en otro municipio o país','%'],['sh_sinrev','% viviendas sin revoque','%'],['sh_haca','% hogares con hacinamiento alto','%'],
  ['poder','Índice de poder adquisitivo (0–100)','']];
 $('indvar').innerHTML = IND_OPTS.map(([k,l])=>`<option value="${k}">${l}</option>`).join('');
@@ -1218,7 +1220,7 @@ function show(it){
     h += `<div class="fs"><h3>Nivel educativo</h3>${stack(o)}</div>`;
     h += `<div class="fs"><h3>Salud</h3>${rows(o,[['sh_afil','Caja de salud o seguro privado'],['sh_sinseg','Sin ningún seguro'],['sh_farm','Acude a farmacia sin receta']])}</div>`;
     h += `<div class="fs"><h3>Vivienda y servicios</h3>${rows(o,[['sh_prop','Vivienda propia'],['sh_alq','Alquiler o anticrético'],['sh_piso','Piso de cerámica o parquet'],['sh_sinrev','Paredes sin revoque'],['sh_haca','Hacinamiento alto'],['sh_agua','Agua por cañería'],['sh_alc','Alcantarillado'],['sh_ele','Electricidad de red pública'],['sh_gas','Gas domiciliario'],['sh_int','Internet en el hogar']])}</div>`;
-    h += `<div class="fs"><h3>Trabajo, hogares y origen</h3>${rows(o,[['sh_emp','Empleados'],['sh_cp','Cuenta propia'],['sh_com','Trabaja en comercio'],['sh_agri','Trabaja en agricultura'],['sh_unip','Hogares de una persona'],['sh_fam','Hogares con hijos'],['sh_migr','Nacido en otro municipio o país']])}</div>`;
+    h += `<div class="fs"><h3>Trabajo, hogares y origen</h3>${rows(o,[['sh_emp','Empleados'],['sh_cp','Cuenta propia'],['sh_com','Trabaja en comercio'],['sh_agri','Trabaja en agricultura'],['sh_trans','Trabaja en transporte'],['sh_unip','Hogares de una persona'],['sh_fam','Hogares con hijos'],['sh_migr','Nacido en otro municipio o país']])}</div>`;
   }
   f.innerHTML = h;
   const u=$('unpin'); if(u) u.onclick=unpin;
