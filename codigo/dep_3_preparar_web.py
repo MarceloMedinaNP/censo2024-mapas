@@ -68,6 +68,39 @@ for r in dep['municipios']:
     if src.exists(): shutil.copy(src, DAT / f'{s}.calles.json')
     print(f"{r['municipio']:24s} barrios {len(sub['barrios']):4d}  negocios {sum(len(v) for v in sub['comp'].values()):4d}  referencias {sum(len(v) for v in sub['lm'].values()):4d}")
 
+# Mapa base dibujado (agua, ríos, áreas verdes, cultivos, calles sin nombre, tren, aeropuerto, cerros), recortado por municipio
+BASE_F = RAIZ / 'datos_osm' / DEP.lower() / f'osm_base_{DEP.lower()}.json'
+if BASE_F.exists():
+    base = json.load(open(BASE_F))
+
+    def dec(s):
+        i = 0; la = lo = 0; out = []
+        while i < len(s):
+            v = []
+            for _ in range(2):
+                sh = res = 0
+                while True:
+                    b = ord(s[i]) - 63; i += 1; res |= (b & 0x1f) << sh; sh += 5
+                    if b < 0x20: break
+                v.append(~(res >> 1) if res & 1 else res >> 1)
+            la += v[0]; lo += v[1]; out.append((la / 1e5, lo / 1e5))
+        return out
+    BOX = {}
+    for k in ['agua', 'rio', 'verde', 'bosque', 'agro', 'calle', 'tren', 'aero', 'pista']:
+        for e in base.get(k, []):
+            s = e[0] if isinstance(e, list) else e
+            p = dec(s); BOX[s] = (min(x[0] for x in p), max(x[0] for x in p), min(x[1] for x in p), max(x[1] for x in p))
+    tot = 0
+    for r in dep['municipios']:
+        w, so, e_, n = r['bounds']; pad = .01
+        hit = lambda s: not (BOX[s][1] < so - pad or BOX[s][0] > n + pad or BOX[s][3] < w - pad or BOX[s][2] > e_ + pad)
+        sub = {k: [x for x in base.get(k, []) if hit(x[0] if isinstance(x, list) else x)] for k in ['agua', 'rio', 'verde', 'bosque', 'agro', 'calle', 'tren', 'aero', 'pista']}
+        for k in ['cerro', 'rio_nombres', 'aero_nombres']:
+            sub[k] = [x for x in base.get(k, []) if so - pad <= x[1] <= n + pad and w - pad <= x[2] <= e_ + pad]
+        f = DAT / f"{r['slug']}.base.json"
+        f.write_text(json.dumps(sub, separators=(',', ':'), ensure_ascii=False)); tot += f.stat().st_size
+    print(f'Mapa base: {tot / 1e6:.1f} MB repartidos en {len(dep["municipios"])} municipios')
+
 lista = [{k: r[k] for k in ['municipio', 'slug', 'personas', 'manzanos', 'zonas', 'cobertura', 'centro', 'bounds']} |
          {'calles': (SAL / f"calles_{r['slug']}.json").exists()} for r in dep['municipios']]
 indice = {'departamento': DEP, 'personas': dep['personas'], 'manzanos': dep['manzanos'], 'municipios': lista,

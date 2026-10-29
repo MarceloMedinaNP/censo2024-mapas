@@ -49,6 +49,12 @@ Caja usada para el municipio de Cochabamba (sur, oeste, norte, este): `-17.53,-6
 
 El archivo se descarga desde el navegador y se adjunta al chat: es la única forma de pasarlo al espacio de trabajo, porque la terminal no llega a Overpass. El servidor público suele estar saturado; el script reintenta con espera creciente.
 
+### Mapa base dibujado (Cochabamba, 29 de octubre de 2026)
+
+`datos_osm/cochabamba/osm_base_cochabamba.json` (3,3 MB). Dentro de Claude el mapa no puede cargar teselas externas, así que el fondo se dibuja con datos de OpenStreetMap: 15.462 cuerpos de agua, 14.252 ríos, canales y torrenteras (204 con nombre), 6.619 áreas verdes, 960 bosques, 6.358 parcelas de cultivo, 42.827 calles sin nombre, 392 tramos de vía férrea, 6 aeródromos y 118 cerros con altura.
+
+Se descargó con una consulta por municipio (las 28 más pequeñas agrupadas de a 6). En los municipios de más de 0,04 grados² se omitieron bosques, cultivos y arroyos para no superar los límites del servidor. Simplificación: 3 m en calles, 5 m en agua y ríos, 12 m en bosques y cultivos; se descartan áreas verdes de menos de 300 m² y bosques o cultivos de menos de 3.000 m². El paso `dep_3_preparar_web.py` lo recorta por municipio (`*.base.json`). La versión pública usa teselas de OpenStreetMap en su lugar.
+
 ## Alternativas para negocios
 
 - **Google Places API**: mucho más completa que OSM, pero cobra por consulta y sus condiciones limitan guardar los datos.

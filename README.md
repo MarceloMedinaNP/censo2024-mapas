@@ -2,14 +2,14 @@
 
 Convertir el Censo de Población y Vivienda 2024 en herramientas para decidir: dónde abrir un negocio, dónde encontrar uno y qué necesita cada barrio o calle.
 
-Actualizado: 28 de octubre de 2026 · Responsable: Marcelo (ThinkingIA)
+Actualizado: 29 de octubre de 2026 · Responsable: Marcelo (ThinkingIA)
 
 ## Lo que ya existe
 
 | Pieza | Estado | Dónde está |
 | --- | --- | --- |
-| Mapa "Oportunidades Cochabamba": 47 municipios, por zona, tramo de calle y manzano; 10 rubros; recorrido guiado y chat "Pregúntale al mapa" | Versión 5 | https://claude.ai/artifact/Bj2BxLaru6nDurqkJc6FUa |
-| Versión pública del mapa (sin chat, con mapa base) | Lista en `docs/` del repositorio; falta activar GitHub Pages | https://marcelomedinanp.github.io/censo2024-mapas/ (ver `documentacion/guia-de-uso.md`) |
+| Mapa "Oportunidades Cochabamba": 47 municipios, por zona, tramo de calle y manzano; 10 rubros; recorrido guiado, chat "Pregúntale al mapa" y mapa base dibujado (ríos, lagunas, áreas verdes, cultivos, tren, cerros) | Versión 6 | https://claude.ai/artifact/Bj2BxLaru6nDurqkJc6FUa |
+| Versión pública del mapa (sin chat, con teselas de OpenStreetMap) | Publicada desde `docs/` del repositorio | https://marcelomedinanp.github.io/censo2024-mapas/ (ver `documentacion/guia-de-uso.md`) |
 | Mapa "Dónde abrir en Cochabamba" (solo municipio de Cochabamba, primera versión) | Versión 5 | https://claude.ai/artifact/5WmMDo4ZkLD6c3tQXSZVfD |
 | Prompt maestro para replicarlo en otra ciudad o rubro | Versión 1 | https://claude.ai/artifact/6HULaFQTyjyxaC6fvrasit (copia en `documentacion/prompt-maestro.md`) |
 | Repositorio con código, datos procesados y mapa | Al día | https://github.com/MarceloMedinaNP/censo2024-mapas |

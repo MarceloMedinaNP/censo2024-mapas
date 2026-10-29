@@ -677,6 +677,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   --bg:#f3f5f2; --panel:#ffffff; --fg:#1b2420; --muted:#5d6b64; --line:#dde3de;
   --accent:#0f7a54; --accent-soft:#e2f1ea; --block:#c9d1cb; --mapbg:#e9ede9;
   --up:#0f7a54; --down:#b4472a; --bar:#9fb3a8; --comp:#c8325a; --sel:#2563c9;
+  --water:#a9cbe0; --river:#6fa3c8; --green:#cfe3c4; --wood:#bcd6ae; --agro:#e6e8d3; --minor:#b9c1bb; --rail:#8a8f8c; --aero:#dcdcd6;
   --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-data:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -684,11 +685,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#111614; --panel:#171e1b; --fg:#e4ebe7; --muted:#97a69e; --line:#2a3430;
   --accent:#3fc08c; --accent-soft:#1b3328; --block:#35413b; --mapbg:#141a17;
-  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; --sel:#7fb0ff; color-scheme:dark}}
+  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; --sel:#7fb0ff;
+  --water:#1d3a4d; --river:#2f6587; --green:#1e3326; --wood:#1b2e21; --agro:#1f241c; --minor:#3a4540; --rail:#5c6460; --aero:#262a27; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#111614; --panel:#171e1b; --fg:#e4ebe7; --muted:#97a69e; --line:#2a3430;
   --accent:#3fc08c; --accent-soft:#1b3328; --block:#35413b; --mapbg:#141a17;
-  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; --sel:#7fb0ff; color-scheme:dark}
+  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; --sel:#7fb0ff;
+  --water:#1d3a4d; --river:#2f6587; --green:#1e3326; --wood:#1b2e21; --agro:#1f241c; --minor:#3a4540; --rail:#5c6460; --aero:#262a27; color-scheme:dark}
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
 .app{display:grid;grid-template-columns:340px 1fr;height:100%}
@@ -819,6 +822,8 @@ ol.rank{margin-top:8px}
 .seg button:last-child:nth-child(3n+2){grid-column:span 2}
 .base-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6)}
 .leaflet-tile-pane{opacity:.85}
+.lbl-w{font-family:var(--f-body);font-style:italic;font-size:11.5px;color:var(--river);letter-spacing:.03em}
+.lbl-peak small{font-weight:400;color:var(--muted)}
 /* Botones */
 .hbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
@@ -1065,6 +1070,9 @@ function setBasemap(){
 setBasemap();
 const rend = L.canvas({padding:.4, tolerance:3});
 const ZB = 15;   // desde este zoom: manzanos y calles interactivos
+map.createPane('basemap'); map.getPane('basemap').style.zIndex = 350; map.getPane('basemap').style.pointerEvents = 'none';
+const rendB = L.canvas({pane:'basemap', padding:.4});
+const gBase=L.layerGroup().addTo(map), gMinor=L.layerGroup();
 const gBlocks=L.layerGroup().addTo(map), gHex=L.layerGroup().addTo(map), gTram=L.layerGroup().addTo(map), gComp=L.layerGroup().addTo(map), gLbl=L.layerGroup().addTo(map);
 map.createPane('sel'); map.getPane('sel').style.zIndex = 450; map.getPane('sel').style.pointerEvents = 'none';
 const selR = L.svg({pane:'sel', padding:.5});
@@ -1109,16 +1117,16 @@ async function loadMun(slug){
   $('mun').value = meta.slug; $('loadmsg').textContent = `Cargando ${meta.municipio}…`;
   try{ if(location.hash!=='#'+meta.slug) history.replaceState(null,'','#'+meta.slug); }catch(e){}
   const get = (k, opt)=>fetch(`datos/${meta.slug}.${k}.json`).then(r=>{ if(!r.ok){ if(opt) return null; throw new Error(r.status); } return r.json(); });
-  let mun, osm, calles;
-  try{ [mun, osm, calles] = await Promise.all([get('mun'), get('osm'), meta.calles ? get('calles', true) : null]); }
+  let mun, osm, calles, base;
+  try{ [mun, osm, calles, base] = await Promise.all([get('mun'), get('osm'), meta.calles ? get('calles', true) : null, STANDALONE ? null : get('base', true).catch(()=>null)]); }
   catch(e){ $('loadmsg').textContent = `No pude cargar los datos de ${meta.municipio}. Recarga la página para intentar de nuevo.`; return; }
-  build(meta, mun, osm, calles);
+  build(meta, mun, osm, calles, base);
   $('loadmsg').textContent = '';
 }
 
-function build(meta, mun, osm, calles){
+function build(meta, mun, osm, calles, base){
   pinned=null; shown=null; stLine.setLatLngs([]); stHalo.setLatLngs([]); hl.setLatLngs([]); hlHalo.setLatLngs([]); hlLine.setLatLngs([]); hlLineHalo.setLatLngs([]);
-  [gBlocks,gHex,gTram,gComp,gLbl].forEach(g=>g.clearLayers());
+  [gBase,gMinor,gBlocks,gHex,gTram,gComp,gLbl].forEach(g=>g.clearLayers()); BASE=[];
   if(heat){ map.removeLayer(heat); heat=null; }
   const keys = mun.keys, obj = v=>{ const o={}; keys.forEach((k,i)=>o[k]=v[i]); return o; };
   const NM = mun.names;
@@ -1148,6 +1156,7 @@ function build(meta, mun, osm, calles){
 
   recomputeAll();
 
+  drawBase(base);
   // Capas: manzanos
   const blk = css('--block');
   M.BLOCKS = mun.blocks.map(b=>{
@@ -1171,6 +1180,9 @@ function build(meta, mun, osm, calles){
     const longest = ts.slice().sort((a,b)=>b.ll.length-a.ll.length)[0];
     mk(longest.mid, esc(M.TN[n].replace(/^Avenida /,'Av. ')), c==='p'?13.5:c==='s'?15:16.5, 'lbl-r'+(c==='p'?' t':'')); });
   osm.barrios.forEach(([n,la,lo])=>mk([la,lo], esc(n), 15.5, 'lbl-b'));
+  if(base){ (base.rio_nombres||[]).forEach(([n,la,lo])=>mk([la,lo], esc(n), 13.5, 'lbl-w'));
+    (base.cerro||[]).forEach(([n,la,lo,ele])=>mk([la,lo], `<i>▲</i>${esc(n)}${ele?` <small>${fmt(ele)} m</small>`:''}`, 13, 'lbl-l lbl-peak'));
+    (base.aero_nombres||[]).forEach(([n,la,lo])=>mk([la,lo], `<i>✈</i>${esc(n)}`, 12, 'lbl-l')); }
   osm.pueblos.forEach(([n,la,lo])=>mk([la,lo], esc(n), 10, 'lbl-p'));
   const LMI = {mercado:['M',14],hospital:['H',14],universidad:['U',14.5],terminal:['T',13.5],plaza:['★',15],banco:['B',16.5],supermercado:['S',16],escuela:['E',16.5]};
   Object.entries(osm.lm).forEach(([k,arr])=>arr.forEach(([n,la,lo])=>mk([la,lo], `<i>${LMI[k][0]}</i>${esc(n)}`, LMI[k][1], 'lbl-l')));
@@ -1197,6 +1209,37 @@ function oppFor(k){
 }
 const streetTxt = t => { const n=M.TN[t.n]; const a=t.a>=0?M.TN[t.a]:null, b=t.b>=0?M.TN[t.b]:null;
   return a&&b&&a!==b ? `${n} entre ${a} y ${b}` : a||b ? `${n}, esquina ${a||b}` : n; };
+
+// ---------- Mapa base dibujado (dentro de Claude no se pueden cargar teselas externas) ----------
+let BASE=[];
+function decPoly(s){ const out=[]; let i=0, la=0, lo=0;
+  while(i<s.length){ const v=[0,0]; for(let k=0;k<2;k++){ let sh=0, r=0, b; do{ b=s.charCodeAt(i++)-63; r|=(b&31)<<sh; sh+=5; }while(b>=32); v[k]=(r&1)?~(r>>1):(r>>1); }
+    la+=v[0]; lo+=v[1]; out.push([la/1e5, lo/1e5]); }
+  return out; }
+const BASE_STY = {
+  agro:  t=>({fill:true, stroke:false, fillColor:css('--agro'), fillOpacity:1}),
+  bosque:t=>({fill:true, stroke:false, fillColor:css('--wood'), fillOpacity:1}),
+  verde: t=>({fill:true, stroke:false, fillColor:css('--green'), fillOpacity:1}),
+  aero:  t=>({fill:true, stroke:false, fillColor:css('--aero'), fillOpacity:1}),
+  agua:  t=>({fill:true, stroke:false, fillColor:css('--water'), fillOpacity:1}),
+  rio:   t=>({fill:false, color:css('--river'), weight: t==='r'?3:t==='c'?1.6:1.1, opacity:.9, lineCap:'round'}),
+  pista: t=>({fill:false, color:css('--rail'), weight:4, opacity:.6}),
+  tren:  t=>({fill:false, color:css('--rail'), weight:1.4, opacity:.9, dashArray:'6 4'}),
+  calle: t=>({fill:false, color:css('--minor'), weight:.8, opacity:.9}),
+};
+function drawBase(base){
+  if(!base) return;
+  for(const k of ['agro','bosque','verde','aero','agua','rio','pista','tren','calle']){
+    for(const e of (base[k]||[])){ const [enc,t] = Array.isArray(e)?e:[e,''];
+      const ll=decPoly(enc); if(ll.length<2) continue;
+      const area = ['agro','bosque','verde','aero','agua'].includes(k);
+      const lyr = (area?L.polygon:L.polyline)(ll, {renderer:rendB, interactive:false, ...BASE_STY[k](t)});
+      // calles sin nombre, arroyos y canales solo al acercarse: en la vista general saturan el mapa
+      ((k==='calle' || (k==='rio' && t!=='r')) ? gMinor : gBase).addLayer(lyr); BASE.push([lyr,k,t]); } }
+  showMinor();
+}
+function showMinor(){ const on = map.getZoom()>=13; if(on && !map.hasLayer(gMinor)) gMinor.addTo(map); else if(!on && map.hasLayer(gMinor)) map.removeLayer(gMinor); }
+function restyleBase(){ for(const [l,k,t] of BASE) l.setStyle(BASE_STY[k](t)); }
 
 // ---------- Dibujo ----------
 function valOf(it){
@@ -1256,7 +1299,7 @@ function setMode(m){
   if(m==='heat') drawHeat(); else if(heat){ map.removeLayer(heat); heat=null; }
   styleAll();
 }
-map.on('zoomend',()=>{ styleAll(); drawComp(); drawLabels(); });
+map.on('zoomend',()=>{ showMinor(); styleAll(); drawComp(); drawLabels(); });
 map.on('moveend',drawLabels);
 
 // ---------- Ficha ----------
@@ -1394,7 +1437,7 @@ $('indvar').onchange=styleAll; $('heatvar').onchange=drawHeat;
 $('r-zonas').onclick=()=>{ rankBy='zonas'; drawRank(); }; $('r-calles').onclick=()=>{ rankBy='calles'; drawRank(); };
 $('wc').oninput=e=>{ WC=e.target.value/100; $('wcn').textContent=e.target.value+'%'; if(!M) return; for(const k in PROFILES) oppFor(k); refresh(); };
 $('showc').onchange=drawComp;
-const retheme=()=>{ setBasemap(); styleAll(); drawComp(); };
+const retheme=()=>{ setBasemap(); restyleBase(); styleAll(); drawComp(); };
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',retheme);
 new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 window.addEventListener('hashchange',()=>{ const s=location.hash.slice(1); if(s && (!M || s!==M.meta.slug) && IDX.municipios.some(m=>m.slug===s)) loadMun(s); });

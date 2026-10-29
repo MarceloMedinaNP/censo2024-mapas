@@ -21,6 +21,8 @@ ol.rank{margin-top:8px}
 .seg button:last-child:nth-child(3n+2){grid-column:span 2}
 .base-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6)}
 .leaflet-tile-pane{opacity:.85}
+.lbl-w{font-family:var(--f-body);font-style:italic;font-size:11.5px;color:var(--river);letter-spacing:.03em}
+.lbl-peak small{font-weight:400;color:var(--muted)}
 /* Botones */
 .hbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
