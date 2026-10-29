@@ -8,50 +8,51 @@ Actualizado: 28 de octubre de 2026 · Responsable: Marcelo (ThinkingIA)
 
 | Pieza | Estado | Dónde está |
 | --- | --- | --- |
-| Mapa "Dónde abrir en Cochabamba" (municipio de Cochabamba) | Versión 5, funcionando | https://claude.ai/artifact/5WmMDo4ZkLD6c3tQXSZVfD |
+| Mapa "Oportunidades Cochabamba": 47 municipios del departamento, por zona, tramo de calle y manzano | Versión 1 | https://claude.ai/artifact/Bj2BxLaru6nDurqkJc6FUa |
+| Mapa "Dónde abrir en Cochabamba" (solo municipio de Cochabamba, primera versión) | Versión 5 | https://claude.ai/artifact/5WmMDo4ZkLD6c3tQXSZVfD |
 | Prompt maestro para replicarlo en otra ciudad o rubro | Versión 1 | https://claude.ai/artifact/6HULaFQTyjyxaC6fvrasit (copia en `prompt-maestro.md`) |
-| Código del flujo de datos (3 pasos) | Probado: reconstruye el mapa idéntico | carpeta `codigo/` |
-| Datos de OpenStreetMap ya descargados (barrios, avenidas, referencias, competencia) | Cochabamba, octubre 2026 | carpeta `datos_osm/` |
+| Repositorio con código, datos procesados y mapa | Al día | https://github.com/MarceloMedinaNP/censo2024-mapas |
 | Metodología y fuentes | Documentadas | `metodologia.md`, `fuentes-de-datos.md` |
 
-El mapa cubre 665.482 personas en 12.477 manzanos (95,4% con ficha completa), agrupados en 646 zonas de unas 23 hectáreas. Para 7 rubros calcula demanda, competencia en 800 m y oportunidad, con nombres de 557 barrios, 121 avenidas y 46 lugares de referencia.
+## Departamento de Cochabamba en cifras
 
-## Cómo reconstruir el mapa
+- 1.602.131 personas en 41.016 manzanos de 47 municipios.
+- 27.668 tramos de calle con ficha propia (de 34.765 tramos con nombre en OpenStreetMap), en 5.001 calles.
+- El 70% de la población del departamento vive frente a una calle con nombre: 86% en el municipio de Cochabamba, alrededor de 65% en Sacaba y Quillacollo, y entre 15% y 30% en municipios como Sipe Sipe, Puerto Villarroel o Arbieto, donde OpenStreetMap tiene menos calles nombradas.
+- Negocios registrados en OpenStreetMap: 447 farmacias, 303 ferreterías, 252 peluquerías, 136 librerías, 80 guarderías, 67 gimnasios y 56 lavanderías.
 
-1. Clonar los datos del censo por manzano en la carpeta de inicio: `git clone https://github.com/mauforonda/atlasurbano ~/atlasurbano`
-2. Instalar dependencias: `pip install pandas pyarrow geopandas shapely numpy`
-3. Desde la carpeta del proyecto, con una subcarpeta `salida/` creada:
-   - `python codigo/1_procesar_censo.py` → indicadores por manzano y por zona
-   - `python codigo/2_agregar_nombres_osm.py` → barrios, avenidas y referencias
-   - `python codigo/3_construir_mapa.py` → competencia y página final `salida/mapa.html`
+## Cómo reconstruir
 
-Para otro municipio se cambia el filtro `m.municipio == 'Cochabamba'` del paso 1 y se descargan sus datos de OpenStreetMap (consultas en `fuentes-de-datos.md`).
+1. `git clone https://github.com/mauforonda/atlasurbano ~/atlasurbano` (censo por manzano).
+2. `pip install pandas pyarrow geopandas shapely numpy`
+3. Desde la carpeta del repositorio:
+   - `python codigo/dep_1_censo.py Cochabamba` → indicadores por manzano, zona y municipio.
+   - `python codigo/dep_2_calles.py Cochabamba` → ficha por tramo de calle (necesita `datos_osm/cochabamba/osm_cochabamba.json`).
+   - `python codigo/dep_3_preparar_web.py Cochabamba` → página y datos en `salida/cochabamba/web/`.
+
+Para otro departamento hace falta su extracto de OpenStreetMap: se genera en el navegador integrado de la app (consultas en `fuentes-de-datos.md`), se descarga y se adjunta al chat. Es el único paso manual.
 
 ## Hacia dónde va: tres aplicaciones
 
-| App | Para quién | Qué responde | Base que ya tenemos |
+| App | Para quién | Qué responde | Estado |
 | --- | --- | --- | --- |
-| Localizador de oportunidades | Empresas que abren sucursales | ¿Dónde abro mi próximo local? | El mapa actual, ampliado a todo el departamento y a nivel de calle |
-| Buscador cercano | Personas en la calle | ¿Qué negocio de lo que busco tengo cerca? | Negocios de OpenStreetMap; falta la ubicación del usuario y más negocios |
-| Atlas municipal | Alcaldías, gobernaciones, ONG | ¿Cómo vive la gente en cada municipio, zona y calle? ¿Dónde están las brechas? | Todos los indicadores del censo por manzano |
+| Localizador de oportunidades | Empresas que abren sucursales | ¿Dónde abro mi próximo local? | Departamento de Cochabamba a nivel de calle, publicado |
+| Atlas municipal | Alcaldías, gobernaciones, ONG | ¿Cómo vive la gente en cada municipio, zona y calle? ¿Dónde están las brechas? | Los datos ya están listos; falta la vista propia |
+| Buscador cercano | Personas en la calle | ¿Qué negocio de lo que busco tengo cerca? | Pendiente: las páginas publicadas no leen el GPS; requiere marcar la ubicación en el mapa o una app aparte |
 
-## Nivel de calle: es posible, con un matiz
+## Decisiones tomadas
 
-El dato más fino que publica el INE es el manzano. Una calle se arma sumando los manzanos que dan a ella: cada tramo de calle (entre dos esquinas) toma los manzanos de ambos lados que están a menos de ~15 m. Así se obtiene una ficha por tramo, del tipo "Av. Ayacucho entre Heroínas y Colombia: N personas, X% mayores de 60" (ejemplo ilustrativo, aún sin calcular). Las calles con nombre salen de OpenStreetMap; no hace falta Google Street View.
-
-## Decisiones pendientes
-
-- Dónde guardar los datos pesados (el proyecto admite 2 MB en total; los datos del censo por manzano de todo el país ya pesan unos 60 MB y las calles de un departamento sumarán decenas de MB más).
-- Con qué departamento seguir después de Cochabamba.
-- Si el buscador cercano usará Google Places (más completo, con costo por consulta y condiciones de uso) u OpenStreetMap más un registro propio de negocios.
+- Datos pesados y código: repositorio de GitHub. Google Drive: resúmenes livianos e informes. Proyecto de Claude: documentación.
+- Primer departamento: Cochabamba. Primera app: el localizador a nivel de calle.
 
 ## Estructura del repositorio
 
 | Carpeta | Contenido |
 | --- | --- |
-| `codigo/` | Pasos 1–3 del mapa municipal; `dep_1_censo.py` y `dep_2_calles.py` para un departamento completo |
-| `datos/cochabamba/` | Censo procesado del departamento: un archivo por municipio (`mun_*.json`), resumen municipal y conteos por manzano |
-| `datos_osm/` | Extractos de OpenStreetMap ya comprimidos |
+| `codigo/` | `dep_1_censo.py`, `dep_2_calles.py`, `dep_3_preparar_web.py` y la plantilla del mapa departamental; los pasos `1_` a `3_` son la primera versión, solo para el municipio de Cochabamba |
+| `datos/cochabamba/` | Conteos por manzano (`conteos_manzano.parquet`), resumen por municipio y por calles |
+| `datos_osm/` | Extractos de OpenStreetMap (departamento y primera versión municipal) |
+| `web/cochabamba/` | El mapa publicado: `index.html` y un juego de archivos por municipio (`*.mun.json`, `*.calles.json`, `*.osm.json`) |
 | `docs/` | Metodología, fuentes de datos y prompt maestro |
 
-Los datos del censo por manzano vienen de [atlasurbano](https://github.com/mauforonda/atlasurbano) (INE, Censo 2024). Los de OpenStreetMap se distribuyen bajo licencia ODbL.
+Datos del censo por manzano: [atlasurbano](https://github.com/mauforonda/atlasurbano) (INE, Censo 2024). OpenStreetMap: © colaboradores de OpenStreetMap, licencia ODbL.

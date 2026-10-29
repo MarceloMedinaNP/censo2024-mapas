@@ -47,8 +47,8 @@ lines = lines[lines.geometry.notna()]
 
 # Reutiliza indicadores y formato de salida del paso 1 sin volver a ejecutarlo
 src = (Path(__file__).with_name('dep_1_censo.py')).read_text()
-ns = {}
-exec(src[src.index('IND = {'):src.index('# ---------- Por municipio')], {'np': np, 'pd': pd, 'cnt': cnt}, ns)
+ns = {'np': np, 'pd': pd, 'cnt': cnt}
+exec(src[src.index('IND = {'):src.index('# ---------- Por municipio')], ns)
 IND, shares, KEYS, SH, COUNTS, row_arr = ns['IND'], ns['shares'], ns['KEYS'], ns['SH'], ns['COUNTS'], ns['row_arr']
 SUM = [c for c in cnt.columns if c not in ('codigo', 'municipio', 'ficha')]
 
