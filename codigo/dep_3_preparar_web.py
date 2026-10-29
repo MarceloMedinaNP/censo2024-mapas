@@ -76,5 +76,19 @@ html = (RAIZ / 'codigo' / 'plantilla_departamento.html').read_text()
 html = html.replace('/*LEAFLETCSS*/', (RAIZ / 'codigo' / 'leaflet.css').read_text())
 html = html.replace('/*INDICE*/', json.dumps(indice, separators=(',', ':'), ensure_ascii=False))
 (WEB / 'index.html').write_text(html)
+
+# Versión pública (GitHub Pages u otro hosting): documento completo, mapa base de CARTO/OpenStreetMap y sin chat
+i = html.index('</style>') + len('</style>')
+pub = ('<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n'
+       '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
+       f'<meta name="description" content="Mapa de oportunidades para abrir negocios en los municipios de {DEP}, por zona, calle y manzano, con el Censo 2024 de Bolivia.">\n'
+       '<style>body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px}img{max-width:100%}[hidden]{display:none!important}'
+       ':root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>\n'
+       + html[:i] + '\n</head>\n<body>\n' + html[i:].replace('/*STANDALONE*/false', 'true') + '\n</body>\n</html>\n')
+assert 'const STANDALONE = true' in pub
+PUB = SAL / 'publico'; PUB.mkdir(exist_ok=True)
+(PUB / 'index.html').write_text(pub)
+(PUB / '.nojekyll').write_text('')
+if not (PUB / 'datos').exists(): (PUB / 'datos').symlink_to(DAT)
 tot = sum(f.stat().st_size for f in DAT.iterdir())
 print(f'Web lista: {WEB} · {len(list(DAT.iterdir()))} archivos de datos, {tot / 1e6:.1f} MB')

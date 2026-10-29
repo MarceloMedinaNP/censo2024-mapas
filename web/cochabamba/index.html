@@ -808,6 +808,55 @@ ol.rank{margin-top:8px}
 .streetbox{display:grid;grid-template-columns:18px 1fr;gap:4px 8px;align-items:start;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
 .streetbox .sw{width:18px;height:5px;border-radius:3px;background:var(--sel);margin-top:7px}
 .streetbox .linkbtn{grid-column:2;margin:0}
+
+.seg button:last-child:nth-child(3n+2){grid-column:span 2}
+/* Botones */
+.hbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+.btn:disabled{opacity:.5;cursor:default}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Chat */
+.zchip{left:50%!important;transform:translateX(-50%)}
+.chatpill{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:max(22px,env(safe-area-inset-bottom,0px));z-index:820;font:inherit;font-size:13px;font-weight:600;
+  background:var(--accent);color:var(--panel);border:0;border-radius:999px;padding:9px 16px;box-shadow:0 4px 16px rgb(0 0 0 / .18);cursor:pointer}
+.chat{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:850;width:360px;max-height:calc(100% - 96px);
+  display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 24px rgb(0 0 0 / .16)}
+.chat[hidden]{display:none!important}
+.chathead{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-family:var(--f-display);font-size:14px}
+.chatlog{overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px;min-height:120px;flex:1}
+.chatlog p{margin:0 0 6px}
+.chatlog ul,.chatlog ol{margin:0 0 6px;padding-left:18px}
+.msg{font-size:13px;line-height:1.45;padding:8px 10px;border-radius:10px;max-width:92%}
+.msg.user{align-self:flex-end;background:var(--accent-soft);color:var(--fg)}
+.msg.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:12px;text-align:left;padding:5px 9px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--fg);cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chatform{border-top:1px solid var(--line);padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.chatform textarea{font:inherit;font-size:13px;resize:vertical;min-height:40px;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
+.chatact{display:flex;align-items:center;gap:6px}
+.chatact .hint{flex:1;min-width:0}
+
+/* Recorrido guiado */
+.tour{position:absolute;top:12px;left:56px;z-index:900;width:min(380px,calc(100% - 68px));background:var(--panel);border:2px solid var(--accent);border-radius:12px;
+  box-shadow:0 10px 30px rgb(0 0 0 / .22);padding:12px 14px 14px}
+.tour[hidden]{display:none!important}
+.tourhead{display:flex;justify-content:space-between;align-items:center}
+.tourn{font-family:var(--f-data);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.tour h3{font-family:var(--f-display);font-size:17px;margin:4px 0 6px;text-wrap:balance}
+.tour p{margin:0 0 12px;font-size:13.5px;line-height:1.5}
+.tourbtns{display:flex;justify-content:flex-end;gap:8px}
+.tour-focus{outline:3px solid var(--accent)!important;outline-offset:3px;border-radius:8px;animation:tf 1.4s ease-in-out 2}
+@keyframes tf{50%{outline-offset:7px}}
+
+@media (max-width:860px){
+  .chatpill{display:none}
+  #map{order:0} .chat{order:1;position:static;width:auto;max-height:70vh;border-radius:0;border-width:1px 0 0;box-shadow:none} .ficha{order:2}
+  .tour{position:fixed;top:auto;left:0;right:0;bottom:0;width:auto;border-radius:12px 12px 0 0;border-width:2px 0 0;padding-bottom:max(14px,env(safe-area-inset-bottom,0px))}
+}
 </style>
 
 <div class="app">
@@ -816,6 +865,10 @@ ol.rank{margin-top:8px}
       <div class="eyebrow">Censo 2024 · manzanos y calles</div>
       <h1>¿Dónde abrir un negocio en el departamento de Cochabamba?</h1>
       <p class="lead">Elige un municipio y un tipo de negocio. Pasa el mouse sobre el mapa para ver la ficha de cada zona; acércate para ver cada calle, tramo por tramo, y cada manzano.</p>
+      <div class="hbtns">
+        <button type="button" class="btn primary" id="tourbtn">Recorrido guiado</button>
+        <button type="button" class="btn" id="chatbtn2" hidden>Pregúntale al mapa</button>
+      </div>
     </header>
 
     <section>
@@ -891,6 +944,25 @@ ol.rank{margin-top:8px}
     <div id="map" role="region" aria-label="Mapa del municipio"></div>
     <div class="zchip" id="zchip"></div>
     <div class="ficha" id="ficha" aria-live="polite"></div>
+    <button type="button" class="chatpill" id="chatbtn" hidden aria-expanded="false" aria-controls="chat">Pregúntale al mapa</button>
+    <section class="chat" id="chat" hidden aria-label="Pregúntale al mapa">
+      <div class="chathead"><b>Pregúntale al mapa</b><button type="button" class="xbtn" id="chatclose" aria-label="Cerrar el chat">✕</button></div>
+      <div class="chatlog" id="chatlog" aria-live="polite">
+        <p class="hint">Pregunta en lenguaje natural. Claude consulta los datos del censo de este mapa y puede mover el mapa para mostrarte la respuesta. Cada pregunta usa tu cuenta de Claude.</p>
+        <div class="chips" id="chips"></div>
+      </div>
+      <form class="chatform" id="chatform">
+        <label for="chatin" class="sr">Tu pregunta</label>
+        <textarea id="chatin" rows="2" placeholder="Ej.: ¿Dónde abro una farmacia en Sacaba?"></textarea>
+        <div class="chatact"><span class="hint" id="chatstatus" aria-live="polite"></span><button type="button" class="btn" id="chatstop" hidden>Detener</button><button type="submit" class="btn primary" id="chatsend">Enviar</button></div>
+      </form>
+    </section>
+    <div class="tour" id="tour" hidden role="dialog" aria-labelledby="tourt" aria-describedby="tourx">
+      <div class="tourhead"><span class="tourn" id="tourn"></span><button type="button" class="xbtn" id="tourclose" aria-label="Salir del recorrido">✕</button></div>
+      <h3 id="tourt"></h3>
+      <p id="tourx"></p>
+      <div class="tourbtns"><button type="button" class="btn" id="tourprev">Anterior</button><button type="button" class="btn primary" id="tournext">Siguiente</button></div>
+    </div>
   </div>
 </div>
 
@@ -902,7 +974,9 @@ const $ = id => document.getElementById(id);
 const fmt = n => n == null ? 's/d' : Math.round(n).toLocaleString('es-BO');
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const norm = t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+const norm = t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const STANDALONE = /*STANDALONE*/false;   // true en la versión pública (GitHub Pages): agrega mapa base, oculta el chat
+const OP = STANDALONE ? {blk:.3, hex:.7} : {blk:1, hex:.85};
 const sumk = (o,a)=>a.reduce((s,k)=>s+(o[k]||0),0);
 const KX=111320*Math.cos(17.4*Math.PI/180), KY=110574, RAD=800;
 const dist=(a,b)=>Math.hypot((a[1]-b[1])*KX,(a[0]-b[0])*KY);
@@ -964,7 +1038,17 @@ let biz='farmacia', mode='opp', WC=.35, rankBy='zonas', pinned=null, shown=null,
 
 // ---------- Mapa y capas ----------
 const map = L.map('map',{preferCanvas:true,zoomSnap:.25,zoomDelta:.5,maxZoom:18.5});
-map.attributionControl.setPrefix('').addAttribution('INE Censo 2024 · atlasurbano · © OpenStreetMap');
+map.attributionControl.setPrefix('').addAttribution(STANDALONE ? 'INE Censo 2024 · atlasurbano' : 'INE Censo 2024 · atlasurbano · © OpenStreetMap');
+// Mapa base: solo en la versión pública; dentro de Claude el contenido externo está bloqueado y los manzanos hacen de fondo
+let baseTiles=null;
+function setBasemap(){
+  if(!STANDALONE) return;
+  const dark = document.documentElement.dataset.theme==='dark' || (document.documentElement.dataset.theme!=='light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  if(baseTiles) map.removeLayer(baseTiles);
+  baseTiles = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark?'dark_all':'light_all'}/{z}/{x}/{y}{r}.png`,
+    {subdomains:'abcd', maxZoom:20, attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);
+}
+setBasemap();
 const rend = L.canvas({padding:.4, tolerance:3});
 const ZB = 15;   // desde este zoom: manzanos y calles interactivos
 const gBlocks=L.layerGroup().addTo(map), gHex=L.layerGroup().addTo(map), gTram=L.layerGroup().addTo(map), gComp=L.layerGroup().addTo(map), gLbl=L.layerGroup().addTo(map);
@@ -1053,7 +1137,7 @@ function build(meta, mun, osm, calles){
   // Capas: manzanos
   const blk = css('--block');
   M.BLOCKS = mun.blocks.map(b=>{
-    const lyr = L.polygon(b.g.map(r=>r.map(([x,y])=>[y,x])),{renderer:rend,stroke:false,fillColor:blk,fillOpacity:1,interactive:false});
+    const lyr = L.polygon(b.g.map(r=>r.map(([x,y])=>[y,x])),{renderer:rend,stroke:false,fillColor:blk,fillOpacity:OP.blk,interactive:false});
     const it = {kind:'mz', c:b.c, h:b.h, n:b.n, full:b.v.length>2, o:b.v.length>2?obj(b.v):{personas:b.v[0],viviendas:b.v[1]}, lyr};
     lyr.on('mouseover',()=>hover(it)); lyr.on('click',()=>pin(it));
     lyr.bindTooltip(()=>placeTxt(b.n),{sticky:true,className:'tipn',direction:'top',offset:[0,-8]}); gBlocks.addLayer(lyr); return it; });
@@ -1122,7 +1206,7 @@ function styleAll(){
   M.HEX.forEach(h=>{ h.lyr.options.interactive = !near;
     if(mode==='heat'){ h.lyr.setStyle({stroke:false,fillOpacity:0}); return; }
     const v=valOf(h);
-    h.lyr.setStyle(v==null?{stroke:false,fillOpacity:0}:{stroke:!near,color:css('--panel'),weight:.6,fillColor:rampColor((v-lo)/(hi-lo||1)),fillOpacity:near?.18:.85}); });
+    h.lyr.setStyle(v==null?{stroke:false,fillOpacity:0}:{stroke:!near,color:css('--panel'),weight:.6,fillColor:rampColor((v-lo)/(hi-lo||1)),fillOpacity:near?.18:OP.hex}); });
   const [tl,th] = range(M.TR);
   M.TR.forEach(t=>{ t.lyr.options.interactive = near;
     if(near && mode!=='heat'){ const v=valOf(t); t.lyr.setStyle({color: v==null?fg:rampColor((v-tl)/(th-tl||1)), weight: t.c==='p'?7:t.c==='s'?6:5, opacity:.95}); }
@@ -1210,7 +1294,7 @@ function show(it){
       h += `<div class="fs"><h3>Competencia · ${pn}</h3><div class="big"><div><b>${cc.n}</b><span>negocios a 800 m</span></div><div><b>${cc.n?fmt(Math.round(per/10)*10):'–'}</b><span>${cc.n?'habitantes por negocio':'ninguno a 800 m'}</span></div></div><p class="hint">El más cercano está a ${dtxt(near)}.</p></div>`; }
     const OP = T?M.OPPT:M.OPP, SCx = T?M.SCT:M.SC, idx = T?it.i:hexI;
     h += `<div class="fs"><h3>${T?'Oportunidad de este tramo por negocio':it.kind==='hex'?'Oportunidad de la zona por negocio':'Oportunidad de su zona por negocio'}</h3><div class="scs">`+
-      Object.entries(PROFILES).map(([k,p])=>{const s=OP[k][idx]; return `<div class="sc${k===biz?' on':''}"><span>${p.n.split(' ')[0]}</span><div class="bar"><i style="width:${s}%"></i></div><span class="n">${s}</span></div>`;}).join('')+
+      Object.entries(PROFILES).map(([k,p])=>{const s=OP[k][idx]; return `<div class="sc${k===biz?' on':''}"><span>${(p.s||p.n).split(' ')[0]}</span><div class="bar"><i style="width:${s}%"></i></div><span class="n">${s}</span></div>`;}).join('')+
       `</div><p class="hint">${PROFILES[biz].n}: oportunidad ${OP[biz][idx]} · demanda ${SCx[biz][idx]}${T?' (comparado con los demás tramos del municipio)':''}.</p></div>`;
   }
   if(it.kind==='mz' && !it.full){
@@ -1296,10 +1380,236 @@ $('indvar').onchange=styleAll; $('heatvar').onchange=drawHeat;
 $('r-zonas').onclick=()=>{ rankBy='zonas'; drawRank(); }; $('r-calles').onclick=()=>{ rankBy='calles'; drawRank(); };
 $('wc').oninput=e=>{ WC=e.target.value/100; $('wcn').textContent=e.target.value+'%'; if(!M) return; for(const k in PROFILES) oppFor(k); refresh(); };
 $('showc').onchange=drawComp;
-const retheme=()=>{ styleAll(); drawComp(); };
+const retheme=()=>{ setBasemap(); styleAll(); drawComp(); };
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',retheme);
 new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 window.addEventListener('hashchange',()=>{ const s=location.hash.slice(1); if(s && (!M || s!==M.meta.slug) && IDX.municipios.some(m=>m.slug===s)) loadMun(s); });
+
+// =====================================================================
+// Pregúntale al mapa: chat con Claude que consulta los datos de esta página
+// =====================================================================
+const IND_LABEL = Object.fromEntries(IND_OPTS.map(([k,l])=>[k,l]));
+Object.assign(IND_LABEL,{p0_19:'Personas de 0 a 19 años',p20_39:'Personas de 20 a 39 años',p40m:'Personas de 40 años o más',p60:'Adultos de 60 años o más',sh40_59:'% de 40 a 59 años',sh_gas:'% con gas domiciliario',sh_com:'% trabaja en comercio',sh_ens:'% trabaja en enseñanza',sh_cons:'% trabaja en construcción'});
+const AGE_SH = {sh0_19:['e0a19_h','e0a19_m'], sh20_39:['e20a39_h','e20a39_m'], sh40_59:['e40a59_h','e40a59_m'], sh60:['e60omas_h','e60omas_m']};
+const AGE_ALL = ['e0a19_h','e20a39_h','e40a59_h','e60omas_h','e0a19_m','e20a39_m','e40a59_m','e60omas_m'];
+const r1 = v => v==null ? null : Math.round(v*10)/10;
+function indOf(it,k){
+  if(k==='poder') return Math.round((it.kind==='tramo'?M.RT:M.R).poder[it.i]*100);
+  if(VARS[k]?.f && !k.startsWith('sh')) return VARS[k].f(it.o);
+  return it.o[k];
+}
+function critVal(it,crit,rub){
+  const T = it.kind==='tramo';
+  if(crit==='oportunidad') return (T?M.OPPT:M.OPP)[rub][it.i];
+  if(crit==='demanda') return (T?M.SCT:M.SC)[rub][it.i];
+  if(crit==='competencia') return T ? (it.h>=0?M.COMP[rub][it.h].pc:null) : M.COMP[rub][it.i].pc;
+  return indOf(it,crit);
+}
+function checkCrit(crit, rub){
+  crit = String(crit||'oportunidad'); rub = String(rub||biz);
+  if(!PROFILES[rub]) throw new Error(`Rubro desconocido "${rub}". Usa uno de: ${Object.keys(PROFILES).join(', ')}`);
+  if(!['oportunidad','demanda','competencia'].includes(crit) && !(crit in IND_LABEL)) throw new Error(`Criterio desconocido "${crit}". Usa oportunidad, demanda, competencia o un indicador: ${Object.keys(IND_LABEL).join(', ')}`);
+  return [crit, rub];
+}
+const zid = h => 'z'+h.i, tid = t => 't'+t.i;
+function itemById(id){ id=String(id||''); const n=+id.slice(1); if(id[0]==='z') return M.HEX[n]; if(id[0]==='t') return M.TR[n]; return null; }
+function findPlace(q){
+  const key = t=>norm(t).replace(/^(avenida|av\.?|calle|c\.|pasaje|psje\.?|plaza|barrio|urbanizacion|villa)\s+/,'');
+  const qn=norm(q), qk=key(q);
+  const streets = Object.keys(M.streets).map(n=>({tipo:'calle', nombre:M.TN[n], n:+n}));
+  const places = Object.keys(M.BAR).map(n=>({tipo:'barrio', nombre:n}));
+  const all = streets.concat(places);
+  return all.find(x=>norm(x.nombre)===qn) || all.find(x=>key(x.nombre)===qk) || all.find(x=>key(x.nombre).startsWith(qk)) || all.find(x=>norm(x.nombre).includes(qn)) || null;
+}
+function zoneAt(la,lo){ let best=null,bd=1e9; M.HEX.forEach((h,j)=>{ const d=dist(M.HC[j],[la,lo]); if(d<bd){bd=d;best=h;} }); return best; }
+const MAIN_IND = ['sh60','sh0_19','sh_sup','sh_int','sh_afil','sh_sinseg','sh_agua','sh_alc','sh_alq','sh_prop','sh_haca','sh_emp','sh_cp','sh_trans','sh_agri'];
+function fichaData(it){
+  const T = it.kind==='tramo', hexI = it.kind==='hex'?it.i:it.h;
+  const out = { id: T?tid(it):zid(it), tipo: T?'tramo de calle':'zona de ~23 ha',
+    nombre: T ? streetTxt(it) : M.placeTxt(it.n), personas: it.o.personas, viviendas: it.o.viviendas, indicadores:{} };
+  if(it.o.sh60!=null) for(const k of MAIN_IND) out.indicadores[IND_LABEL[k]] = {valor:r1(it.o[k]), promedio_municipio:r1(M.CITY[k])};
+  if(hexI>=0){ const c=M.COMP[biz][hexI]; out['competencia_'+biz] = {negocios_a_800m:c.n, mas_cercano_m:c.near}; }
+  out.oportunidad_por_rubro = Object.fromEntries(Object.keys(PROFILES).map(k=>[k, (T?M.OPPT:M.OPP)[k][it.i]]));
+  return out;
+}
+const CHAT_TOOLS = [
+  { name:'ranking_zonas',
+    description:'Ordena las zonas (hexágonos de ~23 ha) del municipio cargado por un criterio. Devuelve id, lugar, valor y personas. Úsalo para "dónde abrir", "zonas con más…".',
+    inputSchema:{type:'object',properties:{criterio:{type:'string',description:'oportunidad | demanda | competencia | clave de indicador (ej. sh60, sh_sup, sh_agua, p60, personas, poder)'},rubro:{type:'string',description:'Clave de rubro, para oportunidad/demanda/competencia'},n:{type:'integer',description:'Cuántas, 1 a 15 (por defecto 8)'},orden:{type:'string',enum:['desc','asc']}},required:['criterio']},
+    execute(i){ const [crit,rub]=checkCrit(i.criterio,i.rubro); const n=Math.max(1,Math.min(15,+i.n||8)), asc=i.orden==='asc';
+      chatProgress('Ordenando zonas…');
+      const pct = crit.startsWith('sh');
+      const rows = M.HEX.filter(h=>!pct || h.o.personas>=300).map(h=>({h,v:critVal(h,crit,rub)})).filter(x=>x.v!=null).sort((a,b)=>asc?a.v-b.v:b.v-a.v).slice(0,n);
+      return { municipio:M.meta.municipio, criterio:crit, rubro:rub, nota: pct?'Solo zonas con 300 o más personas.':undefined,
+        zonas: rows.map(({h,v})=>({id:zid(h), lugar:M.placeTxt(h.n), valor:r1(v), personas:h.o.personas, competidores_800m:M.COMP[rub][h.i].n})) }; } },
+  { name:'ranking_barrios',
+    description:'Ordena los barrios del municipio por un indicador del censo, sumando sus manzanos. Devuelve barrio, valor, personas. Úsalo para preguntas por barrio ("barrios con más mayores de 60").',
+    inputSchema:{type:'object',properties:{indicador:{type:'string',description:'Clave de indicador (ej. sh60, sh_sup, sh_agua, p60, personas)'},n:{type:'integer'},orden:{type:'string',enum:['desc','asc']},min_personas:{type:'integer',description:'Mínimo de personas con ficha (por defecto 500)'}},required:['indicador']},
+    execute(i){ const k=String(i.indicador); if(!(k in IND_LABEL) || k==='poder') throw new Error('Indicador no válido para barrios. Usa: '+Object.keys(IND_LABEL).filter(x=>x!=='poder').join(', '));
+      chatProgress('Sumando manzanos por barrio…');
+      const n=Math.max(1,Math.min(15,+i.n||10)), asc=i.orden==='asc', minp=+i.min_personas||500, agg={};
+      for(const b of M.BLOCKS){ if(!b.full || !b.n || b.n[1]>600) continue; const nm=M.NM[b.n[0]], a=agg[nm]||(agg[nm]={p:0,pf:0,num:0,w:0,mz:0});
+        const pf=sumk(b.o,AGE_ALL); a.p+=b.o.personas; a.pf+=pf; a.mz++;
+        if(AGE_SH[k]) a.num+=sumk(b.o,AGE_SH[k]); else if(!k.startsWith('sh')) a.num+=indOf(b,k)||0; else if(b.o[k]!=null){ a.num+=b.o[k]*b.o.personas; a.w+=b.o.personas; } }
+      const rows = Object.entries(agg).filter(([,a])=>a.pf>=minp).map(([nm,a])=>({barrio:nm, valor: AGE_SH[k]? r1(a.num/a.pf*100) : k.startsWith('sh') ? r1(a.w?a.num/a.w:null) : Math.round(a.num), personas:a.p, manzanos:a.mz}))
+        .filter(x=>x.valor!=null).sort((a,b)=>asc?a.valor-b.valor:b.valor-a.valor).slice(0,n);
+      return { municipio:M.meta.municipio, indicador:IND_LABEL[k], promedio_municipio:r1(M.CITY[k]), nota:'Barrios de OpenStreetMap; cada manzano va al barrio registrado más cercano (menos de 600 m).'+(k.startsWith('sh')&&!AGE_SH[k]?' Porcentaje aproximado, ponderado por población.':''), barrios:rows }; } },
+  { name:'ranking_calles',
+    description:'Ordena las calles del municipio (un tramo por calle, el mejor) por un criterio. Devuelve id del tramo, calle, entre qué calles, valor y personas de frente.',
+    inputSchema:{type:'object',properties:{criterio:{type:'string'},rubro:{type:'string'},n:{type:'integer'},orden:{type:'string',enum:['desc','asc']}},required:['criterio']},
+    execute(i){ if(!M.TR.length) throw new Error('Este municipio no tiene calles con nombre en OpenStreetMap; usa ranking_zonas.');
+      const [crit,rub]=checkCrit(i.criterio,i.rubro); const n=Math.max(1,Math.min(15,+i.n||8)), asc=i.orden==='asc';
+      chatProgress('Ordenando calles…');
+      const pct=crit.startsWith('sh'), seen=new Set(), out=[];
+      for(const x of M.TR.filter(t=>!pct||t.o.personas>=100).map(t=>({t,v:critVal(t,crit,rub)})).filter(x=>x.v!=null).sort((a,b)=>asc?a.v-b.v:b.v-a.v)){
+        if(seen.has(x.t.n)) continue; seen.add(x.t.n); out.push({id:tid(x.t), calle:M.TN[x.t.n], tramo:streetTxt(x.t), valor:r1(x.v), personas_de_frente:x.t.o.personas}); if(out.length===n) break; }
+      return { municipio:M.meta.municipio, criterio:crit, rubro:rub, calles:out }; } },
+  { name:'ficha',
+    description:'Ficha de un lugar: personas, viviendas, indicadores frente al promedio del municipio, competencia y oportunidad por rubro. Pasa un id (z12, t45) o el nombre de un barrio o calle.',
+    inputSchema:{type:'object',properties:{id:{type:'string'},lugar:{type:'string'}}},
+    execute(i){ let it = i.id ? itemById(i.id) : null;
+      if(!it && i.lugar){ const p=findPlace(String(i.lugar)); if(!p) throw new Error(`No encontré "${i.lugar}" en ${M.meta.municipio}.`);
+        if(p.tipo==='calle'){ const ts=M.streets[p.n]; it = ts.slice().sort((a,b)=>b.o.personas-a.o.personas)[0];
+          const f=fichaData(it); f.calle_completa={nombre:p.nombre, tramos:ts.length, personas_de_frente_total_aprox:ts.reduce((s,t)=>s+t.o.personas,0)}; return f; }
+        const [la,lo]=M.BAR[p.nombre][0]; it=zoneAt(la,lo); }
+      if(!it) throw new Error('Indica un id (z12, t45) o un lugar.');
+      return fichaData(it); } },
+  { name:'mostrar_en_mapa',
+    description:'Mueve el mapa y fija la ficha de un lugar para que la persona lo vea. Pasa un id (z12, t45) o el nombre de un barrio o calle. Úsalo cuando la respuesta señale un lugar concreto.',
+    inputSchema:{type:'object',properties:{id:{type:'string'},lugar:{type:'string'}}},
+    execute(i){ let it = i.id ? itemById(i.id) : null;
+      if(!it && i.lugar){ const p=findPlace(String(i.lugar)); if(!p) throw new Error(`No encontré "${i.lugar}".`);
+        if(p.tipo==='calle'){ showStreet(p.n); return {mostrado:'calle '+p.nombre}; }
+        const [la,lo]=M.BAR[p.nombre][0]; it=zoneAt(la,lo); }
+      if(!it) throw new Error('Indica un id o un lugar.');
+      map.flyToBounds(it.lyr.getBounds(),{maxZoom: it.kind==='tramo'?17:15, padding:[40,40], duration:.7}); pin(it);
+      return {mostrado: it.kind==='tramo'?streetTxt(it):M.placeTxt(it.n)}; } },
+  { name:'configurar_mapa',
+    description:'Cambia el municipio cargado, el rubro, la vista (oportunidad, demanda, competencia, indicador, calor) o el indicador coloreado. Devuelve el estado nuevo. Cambia de municipio antes de consultar otro.',
+    inputSchema:{type:'object',properties:{municipio:{type:'string'},rubro:{type:'string'},vista:{type:'string',enum:['oportunidad','demanda','competencia','indicador','calor']},indicador:{type:'string'}}},
+    async execute(i){
+      if(i.municipio){ const q=norm(String(i.municipio)); const m=IDX.municipios.find(x=>norm(x.municipio)===q)||IDX.municipios.find(x=>norm(x.municipio).includes(q));
+        if(!m) throw new Error('Municipio desconocido. Opciones: '+IDX.municipios.map(x=>x.municipio).join(', '));
+        if(m.slug!==M.meta.slug){ chatProgress(`Cargando ${m.municipio}…`); await loadMun(m.slug); } }
+      if(i.rubro){ if(!PROFILES[i.rubro]) throw new Error('Rubro desconocido: '+Object.keys(PROFILES).join(', ')); biz=String(i.rubro); drawBiz(); drawWeights(); }
+      if(i.indicador){ const k=String(i.indicador); if(!IND_OPTS.some(x=>x[0]===k)) throw new Error('Indicador no disponible en la vista: '+IND_OPTS.map(x=>x[0]).join(', ')); $('indvar').value=k; }
+      const V={oportunidad:'opp',demanda:'score',competencia:'comp',indicador:'ind',calor:'heat'};
+      if(i.vista) setMode(V[i.vista]||mode); else if(i.indicador) setMode('ind');
+      refresh(); return estadoMapa(); } },
+];
+function estadoMapa(){
+  const V={opp:'oportunidad',score:'demanda',comp:'competencia',ind:'indicador',heat:'calor'};
+  const f = pinned ? (pinned.kind==='tramo'?streetTxt(pinned):M.placeTxt(pinned.n)) : null;
+  return {municipio:M.meta.municipio, personas:M.meta.personas, zonas:M.HEX.length, tramos_de_calle:M.TR.length, rubro:biz, vista:V[mode],
+    indicador_coloreado: mode==='ind'?IND_LABEL[$('indvar').value]:undefined, ficha_fijada:f, competidores_del_rubro_en_osm:M.comp[biz].length};
+}
+const CHAT_RULES = () => `Eres el asistente de un mapa interactivo de oportunidades de negocio del departamento de Cochabamba (Bolivia), hecho con el Censo de Población y Vivienda 2024 del INE a nivel de manzano y con calles, barrios y negocios de OpenStreetMap.
+Responde siempre en español, breve y concreto: 2 a 6 frases o una lista corta, con cifras. Usa las herramientas para obtener datos; no inventes cifras. Cuando la respuesta señale un lugar concreto, llama a mostrar_en_mapa con el mejor resultado para que la persona lo vea. Para otro municipio, primero configurar_mapa.
+Unidades: zonas = hexágonos de ~23 ha; tramos = calles de esquina a esquina con los manzanos que les dan frente. Puntajes de 0 a 100 son percentiles dentro del municipio (90 = supera al 90% de las zonas). Oportunidad = demanda del rubro combinada con poca competencia a 800 m.
+Límites que debes decir cuando apliquen: el censo mide dónde vive la gente, no dónde trabaja ni por dónde pasa; no mide ingresos (el "poder adquisitivo" se aproxima con educación, internet, piso y seguro de salud); las edades vienen en tramos de 20 años; OpenStreetMap no registra todos los negocios ni todos los barrios.
+Rubros (clave: nombre): ${Object.entries(PROFILES).map(([k,p])=>k+': '+p.n).join('; ')}.
+Indicadores (clave: descripción): ${Object.entries(IND_LABEL).map(([k,l])=>k+': '+l).join('; ')}.
+Municipios disponibles: ${IDX.municipios.map(m=>m.municipio+' ('+m.personas+' hab.)').join(', ')}.
+Promedios del municipio cargado (${M.meta.municipio}): ${MAIN_IND.map(k=>IND_LABEL[k]+' '+r1(M.CITY[k])).join('; ')}.`;
+const CHAT_EXAMPLES = ['¿Cuáles son los barrios con más mayores de 60 años?','¿Dónde abro un gimnasio? Muéstramelo en el mapa','¿Qué calle tiene más oportunidad para una farmacia?','Compara Recoleta con el promedio del municipio','¿Qué zonas tienen menos acceso a agua por cañería?'];
+
+let SAMPLE=null, chatTurns=[], chatCtl=null, chatToolsOk=false, chatBusy=false;
+function md(s){ // markdown mínimo y seguro: negritas, listas y párrafos
+  const lines = esc(s).split('\n'); let html='', list=null;
+  for(const raw of lines){ const l=raw.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>'); const m=l.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)/);
+    if(m){ const t=/^\s*\d/.test(l)?'ol':'ul'; if(list!==t){ if(list) html+=`</${list}>`; html+=`<${t}>`; list=t; } html+=`<li>${m[1]}</li>`; }
+    else { if(list){ html+=`</${list}>`; list=null; } if(l.trim()) html+=`<p>${l}</p>`; } }
+  if(list) html+=`</${list}>`; return html;
+}
+function chatProgress(t){ $('chatstatus').textContent=t; }
+function addMsg(role, html){ const d=document.createElement('div'); d.className='msg '+role; d.innerHTML=html; $('chatlog').appendChild(d); $('chatlog').scrollTop=$('chatlog').scrollHeight; return d; }
+function openChat(open=true){ $('chat').hidden=!open; $('chatbtn').hidden=open||!SAMPLE; $('chatbtn').setAttribute('aria-expanded',open); if(open) setTimeout(()=>$('chatin').focus(),50); }
+const CHAT_ERR = {rate_limited:'Hiciste muchas preguntas seguidas o llegaste a tu límite de uso. Prueba en un rato.', session_expired:'Tu sesión de Claude venció. Vuelve a iniciar sesión.', refused:'Claude no respondió esa pregunta. Prueba formularla de otra forma.', empty_completion:'No hubo respuesta. Prueba con una pregunta más simple.', prompt_too_large:'La conversación quedó muy larga. Recarga la página para empezar de nuevo.'};
+const CHAT_OFF = new Set(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed']);
+async function askChat(q){
+  if(!SAMPLE || chatBusy || !M) return; q=q.trim(); if(!q) return;
+  chatBusy=true; $('chatsend').disabled=true; $('chatstop').hidden=false; $('chatin').value='';
+  $('chips').hidden=true; addMsg('user', esc(q));
+  const bubble = addMsg('bot','<p class="hint">Pensando…</p>');
+  const ctx = `[Estado actual del mapa: ${JSON.stringify(estadoMapa())}]\n\n${q}`;
+  chatTurns.push({role:'user', content:ctx});
+  if(chatTurns.length>12) chatTurns = chatTurns.slice(-12);
+  while(chatTurns.length && chatTurns[0].role!=='user') chatTurns.shift();
+  chatCtl = new AbortController(); chatProgress('');
+  try{
+    const opts = {signal:chatCtl.signal, cache:false, effort:'low', onText:({text})=>{ bubble.innerHTML=md(text); $('chatlog').scrollTop=$('chatlog').scrollHeight; }};
+    if(chatToolsOk) opts.tools = CHAT_TOOLS;
+    const {text, truncated} = await SAMPLE([{role:'user', content:CHAT_RULES()}, ...chatTurns], opts);
+    bubble.innerHTML = md(text) + (truncated?'<p class="hint">La respuesta quedó cortada. Pide algo más acotado.</p>':'');
+    chatTurns.push({role:'assistant', content:text});
+  }catch(e){
+    chatTurns.pop();
+    if(e.code==='cancelled'){ bubble.innerHTML = e.text ? md(e.text)+'<p class="hint">Detenido.</p>' : '<p class="hint">Detenido.</p>'; }
+    else if(CHAT_OFF.has(e.code)){ bubble.innerHTML='<p class="hint">El chat no está disponible en esta vista (no se autorizó el uso de Claude o tu cuenta no lo permite). El resto del mapa funciona igual.</p>'; SAMPLE=null; $('chatform').hidden=true; $('chatbtn2').hidden=true; }
+    else bubble.innerHTML = (e.text?md(e.text):'') + `<p class="hint">${CHAT_ERR[e.code]||'Hubo un problema de conexión. Vuelve a enviar la pregunta.'}</p>`;
+  }finally{ chatBusy=false; $('chatsend').disabled=false; $('chatstop').hidden=true; chatProgress(''); }
+}
+$('chips').innerHTML = CHAT_EXAMPLES.map(t=>`<button type="button" class="chip">${esc(t)}</button>`).join('');
+[...$('chips').children].forEach(b=>b.onclick=()=>askChat(b.textContent));
+$('chatform').onsubmit=e=>{ e.preventDefault(); askChat($('chatin').value); };
+$('chatin').addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); askChat($('chatin').value); } });
+$('chatstop').onclick=()=>chatCtl?.abort();
+$('chatbtn').onclick=()=>openChat(true); $('chatbtn2').onclick=()=>openChat(true); $('chatclose').onclick=()=>openChat(false);
+(async()=>{
+  if(STANDALONE || !window.claude?.use) return;
+  try{ SAMPLE = await window.claude.use('sample'); }catch(e){ SAMPLE=null; }
+  if(!SAMPLE) return;
+  try{ const lim = await SAMPLE.limits(); chatToolsOk = !!lim?.tools && (lim.tools.maxCount==null || lim.tools.maxCount>=CHAT_TOOLS.length); }catch(e){ chatToolsOk=false; }
+  if(!chatToolsOk){ SAMPLE=null; return; }   // sin herramientas el chat no puede leer los datos: mejor ocultarlo
+  $('chatbtn').hidden = !$('chat').hidden; $('chatbtn2').hidden=false;
+})();
+
+// =====================================================================
+// Recorrido guiado
+// =====================================================================
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+function clickFirstRank(){ const li=$('rank').querySelector('li'); if(li) li.click(); }
+const TOUR = [
+  {t:'Bienvenido', x:'Este mapa cruza el Censo 2024 con calles y negocios de OpenStreetMap para los 47 municipios del departamento de Cochabamba. En 2 minutos te muestro todo lo que puedes hacer. Usa "Siguiente" o las flechas del teclado.',
+   run:async()=>{ if(!M||M.meta.slug!=='cochabamba') await loadMun('cochabamba'); biz='farmacia'; drawBiz(); drawWeights(); rankBy='zonas'; setMode('opp'); pinned=null; refresh(); const b=M.meta.bounds; map.fitBounds([[b[1],b[0]],[b[3],b[2]]]); }},
+  {el:'mun', t:'1. Elige el municipio', x:'Aquí cambias de municipio: desde Cochabamba (665 mil habitantes) hasta Morochata. Cada uno carga sus zonas, calles y negocios. El enlace de la página guarda el municipio, así que puedes compartirlo.'},
+  {el:'biz', t:'2. Elige el negocio', x:'Hay diez rubros. Cada uno tiene su propio perfil: la farmacia mira población, adultos mayores y poder adquisitivo; el gimnasio, jóvenes de 20 a 39 años que viven solos.'},
+  {el:'legend', t:'3. Lee el mapa', x:'La vista "Oportunidad" pinta cada zona de ~23 hectáreas: verde oscuro es donde hay más demanda para el rubro y menos competencia. Los puntos rojos son las farmacias que ya existen.'},
+  {el:'rank', t:'4. Las mejores zonas', x:'El ranking muestra las 10 zonas con más oportunidad y por qué destacan. Abro la primera.', run:async()=>{ rankBy='zonas'; drawRank(); await wait(150); clickFirstRank(); }},
+  {el:'ficha', t:'5. La ficha de la zona', x:'Todo lo que dice el censo de ese lugar: pirámide de edad, educación, salud, vivienda, servicios y trabajo. Los ▲▼ comparan con el promedio del municipio. Arriba, la competencia a 800 m y la oportunidad para cada rubro.'},
+  {el:'q', t:'6. Busca una calle o un barrio', x:'Escribo "Ayacucho" en el buscador. El mapa te lleva a la avenida y abre el tramo con más oportunidad.', run:async()=>{ $('q').value='Ayacucho'; goSearch(); }},
+  {el:'ficha', t:'7. Toda la calle', x:'En azul, la calle completa; en oscuro, el tramo elegido, de esquina a esquina. La ficha dice cuántas personas viven en los manzanos que le dan frente y en qué puesto queda frente a los otros tramos. "Ver toda la calle" la encuadra de punta a punta.'},
+  {el:'r-calles', t:'8. Ranking por calles', x:'El ranking también funciona por calles: un tramo por calle, para no repetir la misma avenida.', run:async()=>{ rankBy='calles'; drawRank(); }},
+  {el:'biz', t:'9. Cambia de negocio', x:'Paso a Ferretería. El mapa se recalcula al instante: la oportunidad se mueve hacia la periferia, donde hay casas en construcción y paredes sin revoque.', run:async()=>{ rankBy='zonas'; biz='ferreteria'; drawBiz(); drawWeights(); pinned=null; refresh(); const b=M.meta.bounds; map.flyToBounds([[b[1],b[0]],[b[3],b[2]]],{duration:.7}); }},
+  {el:'wc', t:'10. Ajusta los pesos', x:'Cada variable del perfil tiene su control. Subo la competencia del 35% al 60%: ahora el mapa premia más las zonas sin ferreterías cerca. "Restablecer pesos" vuelve al perfil original.', run:async()=>{ $('wc').value=60; $('wc').oninput({target:$('wc')}); }},
+  {el:'indvar', t:'11. Cualquier indicador del censo', x:'La vista "Indicador" pinta zonas y calles con más de 20 datos del censo. Aquí, el % de personas de 60 años o más: se concentran en el centro y el norte. "Calor" muestra lo mismo como manchas de densidad.', run:async()=>{ $('wc').value=35; $('wc').oninput({target:$('wc')}); biz='farmacia'; drawBiz(); drawWeights(); $('indvar').value='sh60'; setMode('ind'); refresh(); }},
+  {el:'chatbtn2', t:'12. Pregúntale al mapa', x:'', run:async()=>{ setMode('opp'); refresh(); }},
+  {t:'Listo', x:'Eso es todo. Acércate con la rueda del mouse para ver calles y manzanos; haz clic para fijar una ficha. En el celular funciona igual: el mapa arriba y la ficha abajo. Puedes repetir este recorrido cuando quieras.'},
+];
+let tourI=-1;
+function tourFocus(id){ document.querySelectorAll('.tour-focus').forEach(e=>e.classList.remove('tour-focus')); const el=id&&$(id); if(el && !el.hidden){ el.classList.add('tour-focus'); el.scrollIntoView({block:'nearest',behavior:'smooth'}); } }
+async function tourGo(i){
+  if(i<0||i>=TOUR.length) return endTour();
+  tourI=i; const s=TOUR[i];
+  $('tourn').textContent = `${i+1} de ${TOUR.length}`; $('tourt').textContent = s.t;
+  let x = s.x;
+  if(s.el==='chatbtn2') x = SAMPLE ? 'Escribe una pregunta en lenguaje natural y Claude consulta los datos del mapa por ti, y además mueve el mapa para mostrarte la respuesta. Te dejo una pregunta lista: toca "Enviar" para probarla. Usa tu cuenta de Claude.'
+    : STANDALONE ? 'En la versión del mapa dentro de Claude hay un chat: escribes una pregunta en lenguaje natural ("¿dónde abro un gimnasio?") y Claude consulta los datos y mueve el mapa para mostrarte la respuesta.'
+    : 'El chat no está disponible en esta vista. Cuando lo esté, aparece el botón "Pregúntale al mapa": escribes una pregunta en lenguaje natural y Claude consulta los datos y mueve el mapa.';
+  $('tourx').textContent = x;
+  $('tourprev').disabled = i===0; $('tournext').textContent = i===TOUR.length-1 ? 'Terminar' : 'Siguiente';
+  $('tour').hidden=false;
+  if(s.el!=='chatbtn2') openChat(false);
+  try{ if(s.run) await s.run(); }catch(e){}
+  if(s.el==='chatbtn2' && SAMPLE){ openChat(true); $('chatin').value='¿Cuáles son los barrios con más mayores de 60 años?'; tourFocus('chatsend'); }
+  else tourFocus(s.el);
+  $('tournext').focus();
+}
+function endTour(){ $('tour').hidden=true; tourI=-1; tourFocus(null); }
+$('tourbtn').onclick=()=>tourGo(0);
+$('tournext').onclick=()=>tourGo(tourI+1); $('tourprev').onclick=()=>tourGo(tourI-1); $('tourclose').onclick=endTour;
+document.addEventListener('keydown',e=>{ if($('tour').hidden || e.target.matches('input,textarea,select')) return;
+  if(e.key==='ArrowRight') tourGo(tourI+1); else if(e.key==='ArrowLeft') tourGo(tourI-1); else if(e.key==='Escape') endTour(); });
 
 drawBiz(); drawWeights();
 const start = location.hash.slice(1);
