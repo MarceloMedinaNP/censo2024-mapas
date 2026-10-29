@@ -53,6 +53,8 @@ Un puntaje de 90 significa que la zona supera al 90% de las demás para ese rubr
 | Guardería o kínder | 0–19 años 25, hogares con hijos 25, empleados 20, poder adquisitivo 20, población 10 |
 | Ferretería | paredes sin revoque 30, trabaja en construcción 20, vivienda propia 20, población 20, poder adquisitivo 10 (menos es mejor) |
 | Lavandería | hogares unipersonales 30, alquiler o anticrético 30, 20–39 años 20, población 20 |
+| Veterinaria | población 25, vivienda propia 25, hogares con hijos 20, poder adquisitivo 30 (el censo no pregunta por mascotas: casas propias y familias con hijos son la aproximación) |
+| Consultorio dental | población 30, poder adquisitivo 30, caja de salud o seguro privado 15, 0–19 años 10, 40 años o más 15 |
 
 ## 5. Límites que hay que decir siempre
 

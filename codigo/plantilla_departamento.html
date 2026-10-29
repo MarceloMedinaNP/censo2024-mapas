@@ -38,8 +38,8 @@ p.lead{margin:0;color:var(--muted);font-size:13.5px}
 .kpi b{display:block;font-family:var(--f-data);font-weight:500;font-size:15px;font-variant-numeric:tabular-nums}
 .kpi span{font-size:11.5px;color:var(--muted)}
 h2{font-family:var(--f-display);font-weight:700;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}
-.biz{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-.biz button{font:inherit;font-size:13px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
+.biz{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.biz button{font:inherit;font-size:12.5px;text-align:left;padding:8px 8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
 .biz button:hover{border-color:var(--accent)}
 .biz button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel);font-weight:600}
 .weights{display:flex;flex-direction:column;gap:6px;margin-top:12px}
@@ -251,6 +251,7 @@ const VARS = {
   personas:{l:'Población total', f:o=>o.personas},
   p0_19:{l:'Personas de 0 a 19 años', f:o=>sumk(o,['e0a19_h','e0a19_m'])},
   p20_39:{l:'Personas de 20 a 39 años', f:o=>sumk(o,['e20a39_h','e20a39_m'])},
+  p40m:{l:'Personas de 40 años o más', f:o=>sumk(o,['e40a59_h','e40a59_m','e60omas_h','e60omas_m'])},
   p60:{l:'Adultos de 60 años o más', f:o=>sumk(o,['e60omas_h','e60omas_m'])},
   farm:{l:'Acuden a farmacia sin receta', f:o=>o.farm},
   poder:{l:'Poder adquisitivo', f:null},
@@ -265,10 +266,13 @@ const PROFILES = {
   farmacia:{n:'Farmacia', v:[['personas',30],['p60',25],['farm',15],['poder',30]]},
   gimnasio:{n:'Gimnasio', v:[['p20_39',30],['sh20_39',15],['sh_unip',15],['poder',30],['personas',10]]},
   peluqueria:{n:'Peluquería', v:[['personas',40],['p20_39',20],['sh_fam',15],['poder',25]]},
-  libreria:{n:'Librería o papelería', v:[['p0_19',40],['sh0_19',15],['sh_ens',15],['poder',15],['personas',15]]},
-  guarderia:{n:'Guardería o kínder', v:[['p0_19',25],['sh_fam',25],['sh_emp',20],['poder',20],['personas',10]]},
+  libreria:{n:'Librería o papelería', s:'Librería', v:[['p0_19',40],['sh0_19',15],['sh_ens',15],['poder',15],['personas',15]]},
+  guarderia:{n:'Guardería o kínder', s:'Guardería', v:[['p0_19',25],['sh_fam',25],['sh_emp',20],['poder',20],['personas',10]]},
   ferreteria:{n:'Ferretería', v:[['sh_sinrev',30],['sh_cons',20],['sh_prop',20],['personas',20],['poder',10,true]]},
   lavanderia:{n:'Lavandería', v:[['sh_unip',30],['sh_alq',30],['p20_39',20],['personas',20]]},
+  // El censo no pregunta por mascotas: casas propias, hogares con hijos y poder adquisitivo son la mejor aproximación
+  veterinaria:{n:'Veterinaria', v:[['personas',25],['sh_prop',25],['sh_fam',20],['poder',30]]},
+  dentista:{n:'Consultorio dental', s:'Dentista', v:[['personas',30],['poder',30],['sh_afil',15],['p0_19',10],['p40m',15]]},
 };
 const DEFAULTS = JSON.parse(JSON.stringify(PROFILES));
 const VIA = {p:'Avenida o vía principal', s:'Vía secundaria', r:'Calle de barrio'};
@@ -569,7 +573,7 @@ function showStreet(n){
 
 // ---------- Panel ----------
 function drawBiz(){
-  $('biz').innerHTML = Object.entries(PROFILES).map(([k,p])=>`<button type="button" data-k="${k}" aria-pressed="${k===biz}">${p.n}</button>`).join('');
+  $('biz').innerHTML = Object.entries(PROFILES).map(([k,p])=>`<button type="button" data-k="${k}" aria-pressed="${k===biz}" title="${p.n}">${p.s||p.n}</button>`).join('');
   [...$('biz').children].forEach(b=>b.onclick=()=>{biz=b.dataset.k; drawBiz(); drawWeights(); refresh();});
 }
 function drawWeights(){

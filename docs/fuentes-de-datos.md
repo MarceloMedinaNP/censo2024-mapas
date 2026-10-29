@@ -34,6 +34,8 @@ Caja usada para el municipio de Cochabamba (sur, oeste, norte, este): `-17.53,-6
 | Guardería o kínder | `amenity=kindergarten\|childcare` |
 | Ferretería | `shop=hardware\|doityourself` |
 | Lavandería | `shop=laundry\|dry_cleaning` |
+| Veterinaria | `amenity=veterinary`, `shop=pet` (88 en el departamento) |
+| Consultorio dental | `amenity=dentist`, `healthcare=dentist` (127 en el departamento) |
 
 ### Extracto departamental (Cochabamba, 28 de octubre de 2026)
 
