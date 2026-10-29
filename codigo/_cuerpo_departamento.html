@@ -184,8 +184,10 @@ function setBasemap(){
   if(!STANDALONE) return;
   const dark = document.documentElement.dataset.theme==='dark' || (document.documentElement.dataset.theme!=='light' && matchMedia('(prefers-color-scheme: dark)').matches);
   if(baseTiles) map.removeLayer(baseTiles);
-  baseTiles = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark?'dark_all':'light_all'}/{z}/{x}/{y}{r}.png`,
-    {subdomains:'abcd', maxZoom:20, attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);
+  // Teselas estándar de OpenStreetMap (sin clave); en modo oscuro se invierten con un filtro de color
+  baseTiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {maxZoom:19, attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+  map.getContainer().classList.toggle('base-dark', dark);
 }
 setBasemap();
 const rend = L.canvas({padding:.4, tolerance:3});

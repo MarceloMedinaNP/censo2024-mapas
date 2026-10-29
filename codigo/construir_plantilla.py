@@ -19,6 +19,8 @@ ol.rank{margin-top:8px}
 .streetbox .linkbtn{grid-column:2;margin:0}
 
 .seg button:last-child:nth-child(3n+2){grid-column:span 2}
+.base-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6)}
+.leaflet-tile-pane{opacity:.85}
 /* Botones */
 .hbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}

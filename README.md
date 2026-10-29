@@ -60,4 +60,4 @@ Para otro departamento hace falta su extracto de OpenStreetMap: se genera en el 
 | `datos_osm/` | Extractos de OpenStreetMap |
 | `documentacion/` | Guía de uso, metodología, fuentes de datos y prompt maestro |
 
-Datos del censo por manzano: [atlasurbano](https://github.com/mauforonda/atlasurbano) (INE, Censo 2024). OpenStreetMap: © colaboradores de OpenStreetMap, licencia ODbL. Mapa base de la versión pública: © CARTO.
+Datos del censo por manzano: [atlasurbano](https://github.com/mauforonda/atlasurbano) (INE, Censo 2024). OpenStreetMap: © colaboradores de OpenStreetMap, licencia ODbL. Mapa base de la versión pública: teselas de OpenStreetMap.

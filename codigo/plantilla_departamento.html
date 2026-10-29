@@ -149,6 +149,8 @@ ol.rank{margin-top:8px}
 .streetbox .linkbtn{grid-column:2;margin:0}
 
 .seg button:last-child:nth-child(3n+2){grid-column:span 2}
+.base-dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6)}
+.leaflet-tile-pane{opacity:.85}
 /* Botones */
 .hbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
@@ -384,8 +386,10 @@ function setBasemap(){
   if(!STANDALONE) return;
   const dark = document.documentElement.dataset.theme==='dark' || (document.documentElement.dataset.theme!=='light' && matchMedia('(prefers-color-scheme: dark)').matches);
   if(baseTiles) map.removeLayer(baseTiles);
-  baseTiles = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark?'dark_all':'light_all'}/{z}/{x}/{y}{r}.png`,
-    {subdomains:'abcd', maxZoom:20, attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);
+  // Teselas estándar de OpenStreetMap (sin clave); en modo oscuro se invierten con un filtro de color
+  baseTiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {maxZoom:19, attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+  map.getContainer().classList.toggle('base-dark', dark);
 }
 setBasemap();
 const rend = L.canvas({padding:.4, tolerance:3});
