@@ -35,7 +35,16 @@ Caja usada para el municipio de Cochabamba (sur, oeste, norte, este): `-17.53,-6
 | Ferretería | `shop=hardware\|doityourself` |
 | Lavandería | `shop=laundry\|dry_cleaning` |
 
-Para llegar a nivel de calle hará falta además `way["highway"]["name"]` con todos los tipos de vía (residential, tertiary, etc.), que por su tamaño conviene descargar por municipio.
+### Extracto departamental (Cochabamba, 28 de octubre de 2026)
+
+`datos_osm/cochabamba/osm_cochabamba.json` (2,1 MB) se generó en el navegador integrado con una consulta por cada uno de los 47 rectángulos que cubren los manzanos de cada municipio:
+
+- Calles: `way["highway"]["name"]`, excepto senderos, escaleras, ciclovías y vías en construcción. Se cortan en tramos en los nodos que comparten dos o más calles, se simplifican a 3 m y se codifican como polilíneas con precisión 1e-5. Resultado: 34.765 tramos de 5.151 calles.
+- Lugares: `place` = suburb, neighbourhood, quarter, village, town, city, hamlet (3.287).
+- Negocios por rubro, con las etiquetas de la tabla anterior.
+- Referencias: mercados, hospitales y clínicas, universidades, terminales, plazas, escuelas, bancos y supermercados.
+
+El archivo se descarga desde el navegador y se adjunta al chat: es la única forma de pasarlo al espacio de trabajo, porque la terminal no llega a Overpass. El servidor público suele estar saturado; el script reintenta con espera creciente.
 
 ## Alternativas para negocios
 

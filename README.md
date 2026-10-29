@@ -12,6 +12,7 @@ Actualizado: 28 de octubre de 2026 · Responsable: Marcelo (ThinkingIA)
 | Mapa "Dónde abrir en Cochabamba" (solo municipio de Cochabamba, primera versión) | Versión 5 | https://claude.ai/artifact/5WmMDo4ZkLD6c3tQXSZVfD |
 | Prompt maestro para replicarlo en otra ciudad o rubro | Versión 1 | https://claude.ai/artifact/6HULaFQTyjyxaC6fvrasit (copia en `prompt-maestro.md`) |
 | Repositorio con código, datos procesados y mapa | Al día | https://github.com/MarceloMedinaNP/censo2024-mapas |
+| Resumen por municipio (planilla) | 47 municipios × 26 indicadores | Google Drive, carpeta "Censo 2024 · Mapas": https://docs.google.com/spreadsheets/d/1nJWreXXSkp6L7vaoYTnUeuV42D1NIOrzZFxv7le6Tk0 |
 | Metodología y fuentes | Documentadas | `metodologia.md`, `fuentes-de-datos.md` |
 
 ## Departamento de Cochabamba en cifras

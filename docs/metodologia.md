@@ -1,12 +1,15 @@
 # Metodología del mapa de oportunidades
 
-Cómo pasa el mapa de manzanos del censo a un puntaje de oportunidad por zona y por rubro. Versión aplicada en el mapa de Cochabamba (v5, octubre 2026).
+Cómo pasa el mapa de manzanos del censo a un puntaje de oportunidad por zona y por rubro. Versión aplicada en el mapa del municipio de Cochabamba (v5) y en el mapa departamental "Oportunidades Cochabamba" (octubre 2026).
 
 ## 1. Unidad de análisis
 
 - **Manzano**: unidad más fina del Censo 2024 publicada por el INE. Los manzanos con pocas personas no tienen ficha completa por privacidad: suman a la población, pero no a los porcentajes. En Cochabamba la cobertura es 95,4% de la población.
 - **Zona**: grilla hexagonal de 300 m de radio (~23 ha) en coordenadas UTM. Cada manzano va a la zona donde cae su centroide. Se descartan zonas con menos de 150 personas. Zona UTM: 19S (EPSG:32719) para La Paz, El Alto y Cochabamba; 20S (EPSG:32720) para Santa Cruz.
 - **Nombre**: cada zona y manzano toma el barrio de OpenStreetMap más cercano a su centro; a más de 600 m se muestra "cerca de …".
+
+- **Tramo de calle** (mapa departamental): cada calle con nombre de OpenStreetMap se corta en tramos de esquina a esquina. Un tramo suma los manzanos que le dan frente: al menos 15 m del borde del manzano a menos de 25 m del eje de la calle. Un manzano en esquina cuenta para varias calles, así que los tramos no se suman entre sí. Los tramos sin manzanos de frente no tienen ficha.
+- **Municipio**: en el mapa departamental, los percentiles y los promedios de comparación (▲▼) se calculan dentro de cada municipio, no del departamento.
 
 ## 2. Indicadores
 
@@ -35,6 +38,7 @@ Todos se calculan como numerador / denominador sumados, de modo que se pueden ag
 1. **Demanda por rubro**: cada variable del perfil se convierte en percentil entre las zonas. Se pondera con los pesos del perfil (las marcadas "menos es mejor" usan 1 − percentil) y el resultado se vuelve a ordenar de 0 a 100.
 2. **Competencia**: negocios del rubro a 800 m del centro de la zona, por cada 10.000 habitantes dentro de ese radio.
 3. **Oportunidad** = (1 − p) × percentil(demanda) + p × (1 − percentil(competencia por habitante)), con p = 35% por defecto y editable en el mapa. El resultado se reordena de 0 a 100.
+4. **Oportunidad de un tramo de calle**: la demanda del tramo se ordena contra los demás tramos del municipio, y la competencia es la de la zona donde cae el punto medio del tramo.
 
 Un puntaje de 90 significa que la zona supera al 90% de las demás para ese rubro.
 
