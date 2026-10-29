@@ -1,0 +1,44 @@
+# Fuentes de datos
+
+Qué datos usa el proyecto, de dónde salen y cómo se descargan. Revisado el 28 de octubre de 2026.
+
+## Censo 2024 (INE)
+
+| Fuente | Nivel | Qué trae | Acceso |
+| --- | --- | --- | --- |
+| atlasurbano (M. Foronda), github.com/mauforonda/atlasurbano | Manzano, todo el país | `manzanos.parquet` (247.429 polígonos), `poblacion.parquet` (personas y viviendas), `fichas.parquet` (131.801 fichas completas con 171 campos) | `git clone`; funciona desde la terminal de la sesión |
+| Geoportal del INE, idg.ine.gob.bo | Manzano | Ficha oficial por manzano (origen de atlasurbano) | Consulta manzano por manzano |
+| Base de datos del Censo 2024, censo.ine.gob.bo (Descargas) | Microdatos | CSV de 413 MB y bases Redatam; metadatos en anda.ine.gob.bo/index.php/catalog/132 | Descarga directa; sirve para indicadores municipales completos, incluido el área rural dispersa sin manzanos |
+
+Las fichas por manzano cubren el 89,5% de la población nacional. El área rural dispersa no tiene manzanos: para ella se usarán los microdatos a nivel municipal.
+
+## OpenStreetMap (Overpass API)
+
+La terminal de la sesión no puede conectarse a overpass-api.de. Las consultas se ejecutan desde el navegador integrado de la app de escritorio: se abre overpass-api.de y se lanza `fetch('/api/interpreter', {method:'POST', body:'data='+encodeURIComponent(q)})` dentro de la página. Los resultados se comprimen antes de traerlos (polilíneas con precisión 1e-4, donde "!" reemplaza a la barra invertida).
+
+Caja usada para el municipio de Cochabamba (sur, oeste, norte, este): `-17.53,-66.29,-17.32,-66.07`.
+
+| Archivo en `datos_osm/` | Consulta Overpass | Resultado en Cochabamba |
+| --- | --- | --- |
+| `osm_places.json` | `node["place"~"suburb\|neighbourhood\|quarter"]["name"]` | 568 barrios y 8 zonas grandes |
+| `osm_roads.json` | `way["highway"~"^(trunk\|primary\|secondary)$"]["name"]`, unidas por nombre y simplificadas a 20 m | 121 avenidas |
+| `osm_landmarks.json` | plazas, terminal, universidades, hospitales, mercados y parques grandes (selección manual de 46) | 46 referencias |
+| `osm_comp.json` | negocios por rubro, ver tabla siguiente | 1.218 negocios |
+
+| Rubro | Etiquetas OSM |
+| --- | --- |
+| Farmacia | `amenity=pharmacy` |
+| Gimnasio | `leisure=fitness_centre` |
+| Peluquería | `shop=hairdresser\|beauty` |
+| Librería o papelería | `shop=books\|stationery` |
+| Guardería o kínder | `amenity=kindergarten\|childcare` |
+| Ferretería | `shop=hardware\|doityourself` |
+| Lavandería | `shop=laundry\|dry_cleaning` |
+
+Para llegar a nivel de calle hará falta además `way["highway"]["name"]` con todos los tipos de vía (residential, tertiary, etc.), que por su tamaño conviene descargar por municipio.
+
+## Alternativas para negocios
+
+- **Google Places API**: mucho más completa que OSM, pero cobra por consulta y sus condiciones limitan guardar los datos.
+- **Lista del cliente**: sucursales propias y competidores que el cliente ya conoce.
+- **Registro propio**: que los negocios se den de alta en la app (útil para el buscador cercano).

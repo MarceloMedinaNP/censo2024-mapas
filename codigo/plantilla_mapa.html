@@ -1,0 +1,502 @@
+<title>Dónde abrir en Cochabamba</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/*LEAFLETCSS*/
+/* Layout: controles a la izquierda; mapa a la derecha con la ficha de la zona flotando sobre él. En teléfono: mapa, ficha y controles apilados. */
+:root{
+  --bg:#f3f5f2; --panel:#ffffff; --fg:#1b2420; --muted:#5d6b64; --line:#dde3de;
+  --accent:#0f7a54; --accent-soft:#e2f1ea; --block:#c9d1cb; --mapbg:#e9ede9;
+  --up:#0f7a54; --down:#b4472a; --bar:#9fb3a8; --comp:#c8325a;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-data:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111614; --panel:#171e1b; --fg:#e4ebe7; --muted:#97a69e; --line:#2a3430;
+  --accent:#3fc08c; --accent-soft:#1b3328; --block:#35413b; --mapbg:#141a17;
+  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111614; --panel:#171e1b; --fg:#e4ebe7; --muted:#97a69e; --line:#2a3430;
+  --accent:#3fc08c; --accent-soft:#1b3328; --block:#35413b; --mapbg:#141a17;
+  --up:#4cc995; --down:#e58566; --bar:#4e6359; --comp:#ff6f91; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
+.app{display:grid;grid-template-columns:340px 1fr;height:100%}
+aside{grid-column:1;grid-row:1;background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;
+  padding-block:20px 28px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:18px;display:flex;flex-direction:column;gap:22px;min-width:0}
+.mapwrap{grid-column:2;grid-row:1;position:relative;min-width:0}
+#map{position:absolute;inset:0;background:var(--mapbg)}
+.leaflet-container{background:var(--mapbg);font-family:var(--f-body)}
+.leaflet-heatmap-layer{pointer-events:none}
+.eyebrow{font-family:var(--f-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:800;font-size:23px;line-height:1.15;margin:4px 0 6px;text-wrap:balance}
+p.lead{margin:0;color:var(--muted);font-size:13.5px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.kpi b{display:block;font-family:var(--f-data);font-weight:500;font-size:15px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:11.5px;color:var(--muted)}
+h2{font-family:var(--f-display);font-weight:700;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px}
+.biz{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.biz button{font:inherit;font-size:13px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
+.biz button:hover{border-color:var(--accent)}
+.biz button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel);font-weight:600}
+.weights{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.wl{display:grid;grid-template-columns:1fr 92px 26px;gap:8px;align-items:center;font-size:12.5px}
+.wl span.n{font-family:var(--f-data);font-size:11.5px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.wl small{color:var(--down)}
+.linkbtn{font:inherit;font-size:12px;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;justify-self:start;margin-top:4px}
+.seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:12.5px;padding:8px 4px;border:0;background:var(--panel);color:var(--fg);cursor:pointer}
+.wrow2{display:flex;justify-content:space-between;gap:6px;font-family:var(--f-data);font-size:11px;color:var(--muted)}
+.wrow2 b{color:var(--fg);font-weight:500}
+.chk{display:flex;align-items:center;gap:8px;font-size:12.5px;margin-top:10px;cursor:pointer}
+.chk i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--comp);border:1.5px solid var(--panel);box-shadow:0 0 0 1px var(--comp)}
+.chk span{color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+button:focus-visible,select:focus-visible,input:focus-visible,li:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label.f{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
+select{width:100%;font:inherit;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+.legend{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.ramp{height:10px;border-radius:3px}
+.legend .ends{display:flex;justify-content:space-between;font-family:var(--f-data);font-size:11px;color:var(--muted)}
+ol.rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;counter-reset:r}
+ol.rank li{display:grid;grid-template-columns:20px 1fr auto;gap:8px;align-items:center;padding:6px 8px;border-radius:6px;cursor:pointer;counter-increment:r}
+ol.rank li::before{content:counter(r);font-family:var(--f-data);font-size:11.5px;color:var(--muted)}
+ol.rank li:hover{background:var(--accent-soft)}
+ol.rank .d{font-size:12.5px;min-width:0}
+ol.rank .d small{display:block;color:var(--muted);font-size:11.5px}
+ol.rank .s{font-family:var(--f-data);font-weight:500;color:var(--accent);font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.note p{margin:0 0 8px}
+.note strong{color:var(--fg)}
+
+/* Ficha de la zona */
+.ficha{position:absolute;top:12px;right:max(12px,env(safe-area-inset-right,0px));z-index:800;width:330px;max-height:calc(100% - 24px);overflow-y:auto;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 24px rgb(0 0 0 / .14);padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px}
+.fh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fh .t{font-family:var(--f-display);font-weight:700;font-size:16px;line-height:1.2}
+.fh .sub{font-family:var(--f-data);font-size:11px;color:var(--muted)}
+.pin{font-family:var(--f-data);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;background:var(--accent-soft);color:var(--accent);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.xbtn{font:inherit;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:6px;width:28px;height:28px;cursor:pointer;flex:none}
+.hint{font-size:12px;color:var(--muted);margin:0}
+.fs h3{font-family:var(--f-data);font-weight:500;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.big{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.big div{display:flex;flex-direction:column}
+.big b{font-family:var(--f-data);font-weight:500;font-size:18px;font-variant-numeric:tabular-nums}
+.big span{font-size:11.5px;color:var(--muted)}
+.pyr{display:grid;grid-template-columns:1fr 46px 1fr;gap:3px 6px;align-items:center;font-size:11px;font-family:var(--f-data)}
+.pyr .l{display:flex;justify-content:flex-end}
+.pyr .lab{text-align:center;color:var(--muted)}
+.pyr i{display:block;height:11px;border-radius:2px;background:var(--bar)}
+.pyr .r i{background:var(--accent)}
+.pyrk{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+.stack{display:flex;height:12px;border-radius:3px;overflow:hidden}
+.stackk{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:11px;color:var(--muted);margin-top:4px}
+.stackk i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
+table.ind{width:100%;border-collapse:collapse;font-size:12.5px}
+table.ind td{padding:3px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+table.ind tr:last-child td{border-bottom:0}
+table.ind td.v{text-align:right;font-family:var(--f-data);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:8px}
+table.ind td.c{text-align:right;width:64px;font-family:var(--f-data);font-size:11px;white-space:nowrap;padding-left:6px}
+.up{color:var(--up)} .down{color:var(--down)} .eq{color:var(--muted)}
+.sc{display:grid;grid-template-columns:96px 1fr 30px;gap:6px;align-items:center;font-size:12px}
+.sc .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.sc .bar i{display:block;height:100%;background:var(--bar)}
+.sc.on{font-weight:600} .sc.on .bar i{background:var(--accent)}
+.sc span.n{font-family:var(--f-data);text-align:right;font-variant-numeric:tabular-nums}
+.scs{display:flex;flex-direction:column;gap:4px}
+.lbl{white-space:nowrap;pointer-events:none;color:var(--fg);text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 2px var(--bg);transform:translate(-50%,-50%)}
+.lbl-r{font-family:var(--f-body);font-style:italic;font-size:11px;opacity:.85}
+.lbl-r.t{font-weight:600;font-size:11.5px}
+.lbl-b{font-family:var(--f-data);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.lbl-l{font-family:var(--f-body);font-weight:600;font-size:11.5px;display:flex;align-items:center;gap:4px;transform:translate(-7px,-50%)}
+.lbl-l i{flex:none;width:14px;height:14px;border-radius:50%;background:var(--panel);border:1.5px solid var(--fg);font-style:normal;font-size:8.5px;line-height:11px;text-align:center;font-family:var(--f-data);font-weight:500}
+.leaflet-div-icon{background:none;border:0}
+@keyframes hlp{0%{stroke-width:10px}100%{stroke-width:3px}}
+path.pulse{animation:hlp .7s ease-out 2}
+.leaflet-tooltip.tipn{background:var(--panel);color:var(--fg);border:1px solid var(--line);box-shadow:0 2px 8px rgb(0 0 0 / .15);font-family:var(--f-body);font-size:12.5px;font-weight:600;padding:3px 8px}
+.leaflet-tooltip.tipn::before{display:none}
+.search{position:relative}
+.search input{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg)}
+.search .msg{font-size:12px;color:var(--muted);margin-top:4px;min-height:1em}
+.zchip{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:max(22px,env(safe-area-inset-bottom,0px));z-index:800;font-size:12px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.leaflet-bar a{background:var(--panel);color:var(--fg);border-color:var(--line)}
+.leaflet-control-attribution{background:var(--panel)!important;color:var(--muted)!important}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto}
+  .mapwrap{grid-column:1;grid-row:1;height:auto;display:flex;flex-direction:column}
+  #map{position:relative;inset:auto;height:56vh}
+  .zchip{bottom:auto;top:calc(56vh - 40px)}
+  .ficha{position:static;width:auto;max-height:none;border-radius:0;border-width:1px 0 0;box-shadow:none;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  aside{grid-column:1;grid-row:2;border-right:0;border-top:1px solid var(--line);overflow:visible;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <aside>
+    <header>
+      <div class="eyebrow">Demo · Censo 2024 · nivel manzano</div>
+      <h1>¿Dónde abrir un negocio en Cochabamba?</h1>
+      <p class="lead">Municipio de Cochabamba (Cercado). Busca un barrio o elige un tipo de negocio, y pasa el mouse sobre el mapa para ver la ficha de cada zona. Acércate para ver avenidas, barrios y cada manzano.</p>
+    </header>
+    <div class="kpis" id="kpis"></div>
+
+    <section class="search">
+      <h2><label for="q">Buscar un barrio</label></h2>
+      <input id="q" list="qlist" placeholder="Ej.: Recoleta, Sarco, Villa Pagador" autocomplete="off">
+      <datalist id="qlist"></datalist>
+      <div class="msg" id="qmsg"></div>
+    </section>
+
+    <section>
+      <h2>Tipo de negocio</h2>
+      <div class="biz" id="biz" role="group" aria-label="Tipo de negocio"></div>
+      <div class="weights" id="weights"></div>
+      <button class="linkbtn" id="reset" type="button">Restablecer pesos</button>
+      <label class="f" for="wc">Peso de la competencia en la oportunidad</label>
+      <input type="range" id="wc" min="0" max="80" value="35">
+      <div class="wrow2"><span>Solo demanda</span><b id="wcn">35%</b><span>Más peso a la competencia</span></div>
+      <label class="chk" for="showc"><input type="checkbox" id="showc" checked><i aria-hidden="true"></i>Mostrar negocios existentes <span id="ccount"></span></label>
+    </section>
+
+    <section>
+      <h2>Vista del mapa</h2>
+      <div class="seg" role="group" aria-label="Vista del mapa">
+        <button id="m-opp" aria-pressed="true" type="button">Oportunidad</button>
+        <button id="m-score" aria-pressed="false" type="button">Demanda</button>
+        <button id="m-comp" aria-pressed="false" type="button">Competencia</button>
+        <button id="m-ind" aria-pressed="false" type="button">Indicador</button>
+        <button id="m-heat" aria-pressed="false" type="button">Calor</button>
+      </div>
+      <div id="ctl-ind" hidden>
+        <label class="f" for="indvar">Colorear zonas por</label>
+        <select id="indvar"></select>
+      </div>
+      <div id="ctl-heat" hidden>
+        <label class="f" for="heatvar">Concentración de</label>
+        <select id="heatvar">
+          <option value="2">Personas</option>
+          <option value="5">Niños y jóvenes de 0 a 19 años</option>
+          <option value="6">Adultos jóvenes de 20 a 39 años</option>
+          <option value="3">Adultos de 60 años o más</option>
+          <option value="4">Personas que acuden a farmacia sin receta</option>
+        </select>
+      </div>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section>
+      <h2 id="rankh">Mejores 10 zonas</h2>
+      <ol class="rank" id="rank"></ol>
+    </section>
+
+    <div class="note">
+      <p><strong>Cómo se calcula el puntaje.</strong> Cada variable se ordena por percentil entre las 646 zonas, se combina con los pesos del perfil y el resultado se vuelve a ordenar de 0 a 100. Un puntaje de 90 significa que la zona supera al 90% de las demás para ese negocio. <strong>Poder adquisitivo</strong> combina educación superior, internet en el hogar, piso de cerámica o parquet y afiliación a caja de salud o seguro privado.</p>
+      <p><strong>Oportunidad</strong> combina la demanda con la competencia: cuántos negocios del rubro hay a 800 m del centro de la zona por cada 10.000 habitantes de ese radio. Una zona con mucha demanda y pocos negocios cerca sube; una saturada baja. Los negocios vienen de OpenStreetMap, que no los tiene todos; con la lista del cliente o de Google Places el cálculo mejora.</p>
+      <p>Fuente: INE, Censo de Población y Vivienda 2024, fichas por manzano compiladas en el proyecto atlasurbano (M. Foronda). Barrios, avenidas y lugares de referencia: © colaboradores de OpenStreetMap; cada zona toma el nombre del barrio registrado más cercano a su centro. Los manzanos con pocas personas no tienen ficha por privacidad: cuentan en la población pero no en los porcentajes.</p>
+    </div>
+  </aside>
+
+  <div class="mapwrap">
+    <div id="map" role="region" aria-label="Mapa de Cochabamba"></div>
+    <div class="zchip" id="zchip"></div>
+    <div class="ficha" id="ficha" aria-live="polite"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script>
+const D = /*DATA*/;
+const $ = id => document.getElementById(id);
+const fmt = n => n == null ? 's/d' : n.toLocaleString('es-BO');
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const K = {}; D.keys.forEach((k,i)=>K[k]=i);
+const obj = v => { const o={}; D.keys.forEach((k,i)=>o[k]=v[i]); return o; };
+const CITY = obj(D.city);
+const NM = D.names;
+function place(n){ if(!n) return {t:'Sin barrio registrado', near:false}; return {t:NM[n[0]], near:n[1]>600, d:n[1]}; }
+const placeTxt = n => { const p=place(n); return p.near ? 'Cerca de '+p.t : p.t; };
+
+// ---------- Variables y perfiles ----------
+const sumk = (o,a)=>a.reduce((s,k)=>s+(o[k]||0),0);
+const VARS = {
+  personas:{l:'Población total', f:o=>o.personas},
+  p0_19:{l:'Personas de 0 a 19 años', f:o=>sumk(o,['e0a19_h','e0a19_m'])},
+  p20_39:{l:'Personas de 20 a 39 años', f:o=>sumk(o,['e20a39_h','e20a39_m'])},
+  p40m:{l:'Personas de 40 años o más', f:o=>sumk(o,['e40a59_h','e40a59_m','e60omas_h','e60omas_m'])},
+  p60:{l:'Adultos de 60 años o más', f:o=>sumk(o,['e60omas_h','e60omas_m'])},
+  farm:{l:'Acuden a farmacia sin receta', f:o=>o.farm},
+  poder:{l:'Poder adquisitivo', f:null},
+  sh20_39:{l:'% de 20 a 39 años', f:o=>o.sh20_39}, sh0_19:{l:'% de 0 a 19 años', f:o=>o.sh0_19},
+  sh_afil:{l:'% con caja o seguro privado', f:o=>o.sh_afil},
+  sh_unip:{l:'% hogares unipersonales', f:o=>o.sh_unip}, sh_fam:{l:'% hogares con hijos', f:o=>o.sh_fam},
+  sh_alq:{l:'% vivienda alquilada o anticrético', f:o=>o.sh_alq}, sh_prop:{l:'% vivienda propia', f:o=>o.sh_prop},
+  sh_emp:{l:'% ocupados como empleados', f:o=>o.sh_emp}, sh_ens:{l:'% trabaja en enseñanza', f:o=>o.sh_ens},
+  sh_cons:{l:'% trabaja en construcción', f:o=>o.sh_cons}, sh_sinrev:{l:'% viviendas sin revoque', f:o=>o.sh_sinrev},
+};
+// w: peso; inv: true = menos es mejor
+const PROFILES = {
+  farmacia:{n:'Farmacia', v:[['personas',30],['p60',25],['farm',15],['poder',30]]},
+  gimnasio:{n:'Gimnasio', v:[['p20_39',30],['sh20_39',15],['sh_unip',15],['poder',30],['personas',10]]},
+  peluqueria:{n:'Peluquería', v:[['personas',40],['p20_39',20],['sh_fam',15],['poder',25]]},
+  libreria:{n:'Librería o papelería', v:[['p0_19',40],['sh0_19',15],['sh_ens',15],['poder',15],['personas',15]]},
+  guarderia:{n:'Guardería o kínder', v:[['p0_19',25],['sh_fam',25],['sh_emp',20],['poder',20],['personas',10]]},
+  ferreteria:{n:'Ferretería', v:[['sh_sinrev',30],['sh_cons',20],['sh_prop',20],['personas',20],['poder',10,true]]},
+  lavanderia:{n:'Lavandería', v:[['sh_unip',30],['sh_alq',30],['p20_39',20],['personas',20]]},
+};
+const DEFAULTS = JSON.parse(JSON.stringify(PROFILES));
+
+// ---------- Zonas (hexágonos) ----------
+const HEX = D.hex.map((h,i)=>({i, o:obj(h.v), mz:h.mz, n:h.n, ll:h.g.map(([x,y])=>[y,x])}));
+function pctRank(vals){ // percentil 0..1, nulos = 0.5
+  const idx = vals.map((v,i)=>[v,i]).filter(x=>x[0]!=null).sort((a,b)=>a[0]-b[0]);
+  const r = new Array(vals.length).fill(.5); const n = idx.length;
+  let j=0; while(j<n){ let k=j; while(k+1<n && idx[k+1][0]===idx[j][0]) k++;
+    const p = n>1 ? ((j+k)/2)/(n-1) : .5; for(let t=j;t<=k;t++) r[idx[t][1]] = p; j=k+1; }
+  return r;
+}
+const RANK = {};
+for(const [k,v] of Object.entries(VARS)) if(v.f) RANK[k] = pctRank(HEX.map(h=>v.f(h.o)));
+['sh_sup','sh_int','sh_piso'].forEach(k=>RANK[k]=pctRank(HEX.map(h=>h.o[k])));
+RANK.poder = HEX.map((_,i)=>(RANK.sh_sup[i]+RANK.sh_int[i]+RANK.sh_piso[i]+RANK.sh_afil[i])/4);
+const PODER = RANK.poder.map(x=>Math.round(x*100));
+
+function scoreProfile(p){
+  const raw = HEX.map((_,i)=>{ let s=0,w=0; for(const [k,wt,inv] of p.v){ if(!wt) continue; const r=RANK[k][i]; s+=wt*(inv?1-r:r); w+=wt; } return w?s/w:0; });
+  return pctRank(raw).map(x=>Math.round(x*100));
+}
+let SCORES = {}; const recomputeAll = ()=>{ for(const k in PROFILES) SCORES[k]=scoreProfile(PROFILES[k]); };
+recomputeAll();
+let biz = 'farmacia';
+
+// ---------- Competencia y oportunidad ----------
+const KX=111320*Math.cos(17.4*Math.PI/180), KY=110574, RAD=800;
+const HC = HEX.map(h=>[h.ll.reduce((s,p)=>s+p[0],0)/h.ll.length, h.ll.reduce((s,p)=>s+p[1],0)/h.ll.length]);
+const dist=(a,b)=>Math.hypot((a[1]-b[1])*KX,(a[0]-b[0])*KY);
+const POP800 = HC.map(c=>HEX.reduce((s,h,j)=>s+(dist(c,HC[j])<=RAD?h.o.personas:0),0));
+const COMP={};
+for(const k in PROFILES){ const pts=D.comp[k]||[];
+  COMP[k]=HC.map((c,i)=>{ let n=0,near=1e9; for(const p of pts){ const d=dist(c,p); if(d<=RAD) n++; if(d<near) near=d; }
+    return {n, near:Math.round(near), pc:POP800[i]>0 ? n/POP800[i]*1e4 : 0}; }); }
+const CRANK={}; for(const k in COMP) CRANK[k]=pctRank(COMP[k].map(x=>x.pc));
+let WC=.35; const OPP={};
+function oppFor(k){ const dr=pctRank(SCORES[k]); return pctRank(HEX.map((_,i)=>(1-WC)*dr[i]+WC*(1-CRANK[k][i]))).map(x=>Math.round(x*100)); }
+const recomputeOpp=()=>{ for(const k in PROFILES) OPP[k]=oppFor(k); };
+recomputeOpp();
+
+// ---------- Mapa ----------
+const map = L.map('map',{preferCanvas:true,zoomSnap:.25,zoomDelta:.5,maxZoom:18});
+map.attributionControl.setPrefix('').addAttribution('INE Censo 2024 · atlasurbano');
+const rend = L.canvas({padding:.4, tolerance:1});
+const ZB = 15; // zoom desde el que se ven manzanos
+
+// Manzanos: capa base e interactiva al acercarse
+const BLOCKS = D.blocks.map(b=>{
+  const lyr = L.polygon(b.g.map(r=>r.map(([x,y])=>[y,x])),{renderer:rend,stroke:false,fillColor:css('--block'),fillOpacity:1,interactive:false});
+  const it = {kind:'mz', c:b.c, h:b.h, n:b.n, full:b.v.length>2, o:b.v.length>2?obj(b.v):{personas:b.v[0],viviendas:b.v[1]}, lyr};
+  lyr.on('mouseover',()=>hover(it)); lyr.on('click',()=>pin(it)); lyr.bindTooltip(()=>placeTxt(b.n),{sticky:true,className:'tipn',direction:'top',offset:[0,-8]}); lyr.addTo(map); return it;
+});
+const allB = L.featureGroup(BLOCKS.map(b=>b.lyr)); map.fitBounds(allB.getBounds(),{padding:[10,10]});
+
+// Rampa secuencial
+const RAMP = ['#f7f4c6','#cde8a2','#8fd18a','#45b07a','#1a8a6e','#0b6467','#103f5a'];
+function rampColor(t){ t=Math.max(0,Math.min(1,t)); const i=t*(RAMP.length-1), a=Math.floor(i), f=i-a;
+  if(a>=RAMP.length-1) return RAMP[RAMP.length-1];
+  const h=s=>[1,3,5].map(k=>parseInt(s.slice(k,k+2),16)), c1=h(RAMP[a]), c2=h(RAMP[a+1]);
+  return 'rgb('+c1.map((v,k)=>Math.round(v+(c2[k]-v)*f)).join(',')+')'; }
+const rampCSS = 'linear-gradient(90deg,'+RAMP.join(',')+')';
+
+HEX.forEach(h=>{ h.kind='hex'; h.lyr = L.polygon(h.ll,{renderer:rend,interactive:true}).addTo(map);
+  h.lyr.on('mouseover',()=>hover(h)); h.lyr.on('click',()=>pin(h));
+  h.lyr.bindTooltip(()=>placeTxt(h.n),{sticky:true,className:'tipn',direction:'top',offset:[0,-8]}); });
+
+// Avenidas (OpenStreetMap), por encima de las zonas
+const RW = {t:2.6, p:1.8, s:1.1};
+const ROADS = D.roads.map(([n,c,segs])=>({n,c,lyr:L.polyline(segs,{renderer:rend,interactive:false,weight:RW[c],opacity:.55,lineCap:'round'}).addTo(map), segs}));
+// Etiquetas: avenidas, barrios y lugares de referencia
+const segLen = s=>{let l=0;for(let i=1;i<s.length;i++) l+=Math.hypot(s[i][0]-s[i-1][0],s[i][1]-s[i-1][1]);return l;};
+const LBL = [];
+ROADS.forEach(r=>{ const s=r.segs.slice().sort((a,b)=>segLen(b)-segLen(a))[0]; if(!s) return;
+  const m2 = s.length>2 ? s[Math.floor(s.length/2)] : [(s[0][0]+s[s.length-1][0])/2,(s[0][1]+s[s.length-1][1])/2];
+  const name=r.n.replace(/^Avenida /,'Av. ');
+  LBL.push({z:r.c==='s'?15:14, m:L.marker(m2,{interactive:false,keyboard:false,icon:L.divIcon({className:'',html:`<div class="lbl lbl-r${r.c==='t'?' t':''}">${name}</div>`,iconSize:null})})}); });
+D.barrios.forEach(([i,la,lo])=>LBL.push({z:15.5, m:L.marker([la,lo],{interactive:false,keyboard:false,icon:L.divIcon({className:'',html:`<div class="lbl lbl-b">${NM[i]}</div>`,iconSize:null})})}));
+const LMI = {m:'M',h:'H',u:'U',p:'P',b:'T',s:'★'};
+D.lm.forEach(([n,t,la,lo])=>{ const big = t==='s'||t==='b'||/San Simón|Viedma|25 de Mayo|Campesino/.test(n);
+  LBL.push({z:big?12.5:14, m:L.marker([la,lo],{interactive:false,keyboard:false,icon:L.divIcon({className:'',html:`<div class="lbl lbl-l"><i>${LMI[t]}</i>${n}</div>`,iconSize:null})})}); });
+function drawLabels(){ const z=map.getZoom(); LBL.forEach(l=>{ const on=z>=l.z; if(on&&!l.on){l.m.addTo(map);l.on=true;} else if(!on&&l.on){map.removeLayer(l.m);l.on=false;} }); }
+map.on('zoomend',drawLabels);
+let compLayer=null;
+function drawComp(){
+  if(compLayer){ map.removeLayer(compLayer); compLayer=null; }
+  const pts=D.comp[biz]||[]; $('ccount').textContent=`(${fmt(pts.length)} en OpenStreetMap)`;
+  if(!$('showc').checked) return;
+  const z=map.getZoom(), r = z>=15?5.5 : z>=13.5?4 : 3;
+  compLayer = L.layerGroup(pts.map(p=>L.circleMarker(p,{renderer:rend,interactive:false,radius:r,weight:1.2,color:css('--panel'),fillColor:css('--comp'),fillOpacity:.95}))).addTo(map);
+}
+map.on('zoomend',drawComp);
+// Zona elegida: contorno con halo, en su propia capa por encima de todo
+map.createPane('sel'); map.getPane('sel').style.zIndex = 450; map.getPane('sel').style.pointerEvents = 'none';
+const selR = L.svg({pane:'sel', padding:.5});
+const hlHalo = L.polygon([[0,0]],{renderer:selR,interactive:false,fill:false,weight:7,lineJoin:'round'}).addTo(map);
+const hl = L.polygon([[0,0]],{renderer:selR,interactive:false,fill:true,fillOpacity:0,weight:2.5,lineJoin:'round'}).addTo(map);
+function styleHL(p){
+  hl.setStyle({color:css('--fg'), weight:p?3:2, fillColor:css('--fg'), fillOpacity:p?.14:.06});
+  hlHalo.setStyle({color:css('--panel'), weight:p?8:5, opacity:p?.95:.7});
+}
+function pulseHL(){ const el=hl.getElement(); if(!el) return; el.classList.remove('pulse'); void el.getBoundingClientRect(); el.classList.add('pulse'); }
+
+let mode='opp', heat=null;
+const IND_OPTS = [['personas','Personas por zona',''],['sh0_19','% de 0 a 19 años','%'],['sh20_39','% de 20 a 39 años','%'],['sh60','% de 60 años o más','%'],
+ ['sh_sup','% con educación superior','%'],['sh_int','% de hogares con internet','%'],['sh_piso','% viviendas con piso de cerámica o parquet','%'],
+ ['sh_afil','% con caja de salud o seguro privado','%'],['sh_sinseg','% sin ningún seguro de salud','%'],['sh_farm','% que acude a farmacia sin receta','%'],
+ ['sh_alq','% vivienda alquilada o anticrético','%'],['sh_unip','% hogares unipersonales','%'],['sh_fam','% hogares con hijos','%'],
+ ['sh_emp','% ocupados como empleados','%'],['sh_cp','% trabajan por cuenta propia','%'],['sh_sinrev','% viviendas sin revoque','%'],['sh_haca','% hogares con hacinamiento alto','%'],
+ ['poder','Índice de poder adquisitivo (0–100)','']];
+$('indvar').innerHTML = IND_OPTS.map(([k,l])=>`<option value="${k}">${l}</option>`).join('');
+
+function zoneVal(h){ if(mode==='opp') return OPP[biz][h.i]; if(mode==='score') return SCORES[biz][h.i]; if(mode==='comp') return COMP[biz][h.i].pc; const k=$('indvar').value; return k==='poder'?PODER[h.i]:h.o[k]; }
+function styleAll(){
+  const z = map.getZoom(), near = z>=ZB, blk = css('--block');
+  const recolor = blk!==styleAll.blk; styleAll.blk = blk;
+  BLOCKS.forEach(b=>{ b.lyr.options.interactive = near; if(recolor) b.lyr.setStyle({fillColor:blk}); });
+  let lo=0, hi=100, unit='';
+  if(mode==='ind'||mode==='comp'){ const vs=HEX.map(zoneVal).filter(v=>v!=null).sort((a,b)=>a-b); lo=vs[Math.floor(vs.length*.03)]; hi=vs[Math.floor(vs.length*.97)];
+    unit=(IND_OPTS.find(x=>x[0]===$('indvar').value)||[])[2]||''; }
+  HEX.forEach(h=>{ h.lyr.options.interactive = !near;
+    if(mode==='heat'){ h.lyr.setStyle({stroke:false,fillOpacity:0}); return; }
+    const v = zoneVal(h);
+    h.lyr.setStyle(v==null?{stroke:false,fillOpacity:0}:{stroke:true,color:css('--panel'),weight:.6,fillColor:rampColor((v-lo)/(hi-lo||1)),fillOpacity:near?.45:.85}); });
+  ROADS.forEach(r=>r.lyr.setStyle({color:css('--fg')})); styleHL(!!pinned && pinned===shown);
+  if(mode==='heat') return;
+  const ends = mode==='opp'?['Menos oportunidad','Más oportunidad'] : mode==='score'?['Menos demanda','Más demanda'] : mode==='comp'?['Sin competencia cerca', `${hi.toFixed(1)} negocios c/10 mil hab.`] : [fmt(Math.round(lo))+unit, fmt(Math.round(hi))+unit];
+  $('legend').innerHTML = `<div class="ramp" style="background:${rampCSS}"></div><div class="ends"><span>${ends[0]}</span><span>${ends[1]}</span></div>`;
+  $('zchip').textContent = near ? 'Viendo manzanos: pasa el mouse o toca uno' : 'Acércate para ver cada manzano';
+}
+const HEATGRAD = {0.2:'#cde8a2',0.45:'#45b07a',0.7:'#f2b134',0.9:'#e0602c',1:'#b3261e'};
+function drawHeat(){
+  const k = +$('heatvar').value, pts = D.pts.filter(p=>p[k]>0).map(p=>[p[0],p[1],p[k]]);
+  const vs = pts.map(p=>p[2]).sort((a,b)=>a-b), max = vs[Math.floor(vs.length*.97)]||1;
+  if(heat) map.removeLayer(heat);
+  heat = L.heatLayer(pts,{radius:18,blur:22,max,minOpacity:.25,maxZoom:15,gradient:HEATGRAD}).addTo(map);
+  $('legend').innerHTML = `<div class="ramp" style="background:linear-gradient(90deg,${Object.values(HEATGRAD).join(',')})"></div><div class="ends"><span>Menor concentración</span><span>Mayor</span></div>`;
+}
+function setMode(m){
+  mode=m; ['opp','score','comp','ind','heat'].forEach(k=>$('m-'+k).setAttribute('aria-pressed',k===m));
+  $('ctl-ind').hidden = m!=='ind'; $('ctl-heat').hidden = m!=='heat';
+  if(m==='heat') drawHeat(); else if(heat){ map.removeLayer(heat); heat=null; }
+  styleAll();
+}
+map.on('zoomend',styleAll);
+
+// ---------- Ficha ----------
+let pinned=null, shown=null;
+function hover(it){ if(!pinned) show(it); }
+function pin(it){ pinned=it; show(it); pulseHL(); }
+function unpin(){ pinned=null; if(shown) show(shown); }
+function cmp(v,c,unit='pts'){ if(v==null||c==null) return '<span class="eq">–</span>';
+  const d=v-c; if(Math.abs(d)<1) return '<span class="eq">≈ prom.</span>';
+  return `<span class="${d>0?'up':'down'}">${d>0?'▲':'▼'} ${Math.abs(d).toFixed(0)} ${unit}</span>`; }
+function rows(o,list){ return '<table class="ind">'+list.map(([k,l])=>`<tr><td>${l}</td><td class="v">${o[k]==null?'s/d':o[k].toFixed(0)+'%'}</td><td class="c">${cmp(o[k],CITY[k])}</td></tr>`).join('')+'</table>'; }
+function pyramid(o){
+  const B=[['60omas','60+'],['40a59','40–59'],['20a39','20–39'],['0a19','0–19']];
+  const tot = sumk(o,['e0a19_h','e20a39_h','e40a59_h','e60omas_h','e0a19_m','e20a39_m','e40a59_m','e60omas_m'])||1;
+  const mx = Math.max(...B.flatMap(([b])=>[o['e'+b+'_h'],o['e'+b+'_m']]))/tot||1;
+  return '<div class="pyr">'+B.map(([b,l])=>{const h=o['e'+b+'_h']/tot, m=o['e'+b+'_m']/tot;
+    return `<div class="l"><i style="width:${h/mx*100}%" title="Hombres ${Math.round(h*100)}%"></i></div><div class="lab">${l}</div><div class="r"><i style="width:${m/mx*100}%" title="Mujeres ${Math.round(m*100)}%"></i></div>`;}).join('')+
+    '</div><div class="pyrk"><span>Hombres</span><span>Mujeres</span></div>';
+}
+function stack(o){
+  const P=[['edu_ninguno','Ninguno','#d9c9a3'],['edu_prim','Primaria','#b7cfa0'],['edu_sec','Secundaria','#5fae84'],['edu_sup','Superior','#0f6b62']];
+  const t=sumk(o,P.map(p=>p[0]))||1;
+  return `<div class="stack">${P.map(([k,,c])=>`<span style="width:${o[k]/t*100}%;background:${c}"></span>`).join('')}</div>
+   <div class="stackk">${P.map(([k,l,c])=>`<span><i style="background:${c}"></i>${l} ${Math.round(o[k]/t*100)}%</span>`).join('')}</div>`;
+}
+function show(it){
+  shown = it; const f=$('ficha'); const o=it.o; const isPin = pinned===it;
+  const sel = it.kind==='hex'?it.ll:it.lyr.getLatLngs(); hl.setLatLngs(sel); hlHalo.setLatLngs(sel); styleHL(isPin);
+  const hexI = it.kind==='hex'?it.i:it.h;
+  const pl = place(it.n);
+  const title = (it.kind==='hex' ? (pl.near?'Zona cerca de ':'Zona ') : (pl.near?'Manzano cerca de ':'Manzano en ')) + pl.t;
+  const sub = it.kind==='hex' ? `Zona de ~23 ha · ${fmt(it.mz)} manzanos` : `Manzano ${it.c}`;
+  let h = `<div class="fh"><div><div class="t">${title}${isPin?'<span class="pin">Fijada</span>':''}</div><div class="sub">${sub}</div></div>${isPin?'<button class="xbtn" id="unpin" type="button" aria-label="Soltar la ficha">✕</button>':''}</div>`;
+  h += `<p class="hint">${isPin?'Toca otra zona para cambiarla, o suelta la ficha para seguir el mouse.':'Haz clic o toca para fijar esta ficha.'} Los ▲▼ comparan con el promedio del municipio.</p>`;
+  h += `<div class="big"><div><b>${fmt(o.personas)}</b><span>personas</span></div><div><b>${fmt(o.viviendas)}</b><span>viviendas</span></div></div>`;
+  if(hexI>=0){
+    const cc=COMP[biz][hexI], pob=POP800[hexI], per = cc.n ? pob/cc.n : 0;
+    const near = cc.near>=1000 ? (cc.near/1000).toFixed(1).replace('.',',')+' km' : cc.near+' m';
+    h += `<div class="fs"><h3>Competencia · ${PROFILES[biz].n.toLowerCase()}</h3><div class="big"><div><b>${cc.n}</b><span>negocios a 800 m</span></div><div><b>${cc.n?fmt(Math.round(per/10)*10):'–'}</b><span>${cc.n?'habitantes por negocio':'ninguno a 800 m'}</span></div></div><p class="hint">El más cercano está a ${near}. Oportunidad ${OPP[biz][hexI]} · demanda ${SCORES[biz][hexI]}.</p></div>`;
+    h += `<div class="fs"><h3>${it.kind==='hex'?'Oportunidad de la zona por negocio':'Oportunidad de su zona por negocio'}</h3><div class="scs">`+
+      Object.entries(PROFILES).map(([k,p])=>{const s=OPP[k][hexI]; return `<div class="sc${k===biz?' on':''}"><span>${p.n.split(' ')[0]}</span><div class="bar"><i style="width:${s}%"></i></div><span class="n">${s}</span></div>`;}).join('')+'</div></div>';
+  }
+  if(it.kind==='mz' && !it.full){
+    h += `<p class="hint">Este manzano tiene pocas personas y el INE no publica su ficha detallada por privacidad.</p>`;
+  } else {
+    h += `<div class="fs"><h3>Edad y sexo</h3>${pyramid(o)}</div>`;
+    h += `<div class="fs"><h3>Nivel educativo</h3>${stack(o)}</div>`;
+    h += `<div class="fs"><h3>Salud</h3>${rows(o,[['sh_afil','Caja de salud o seguro privado'],['sh_sinseg','Sin ningún seguro'],['sh_farm','Acude a farmacia sin receta']])}</div>`;
+    h += `<div class="fs"><h3>Vivienda y servicios</h3>${rows(o,[['sh_prop','Vivienda propia'],['sh_alq','Alquiler o anticrético'],['sh_piso','Piso de cerámica o parquet'],['sh_sinrev','Paredes sin revoque'],['sh_haca','Hacinamiento alto'],['sh_agua','Agua por cañería'],['sh_alc','Alcantarillado'],['sh_gas','Gas domiciliario'],['sh_int','Internet en el hogar']])}</div>`;
+    h += `<div class="fs"><h3>Trabajo y hogares</h3>${rows(o,[['sh_emp','Empleados'],['sh_cp','Cuenta propia'],['sh_com','Trabaja en comercio'],['sh_unip','Hogares de una persona'],['sh_fam','Hogares con hijos']])}</div>`;
+  }
+  f.innerHTML = h;
+  const u=$('unpin'); if(u) u.onclick=unpin;
+}
+
+// ---------- Panel ----------
+$('kpis').innerHTML = [[fmt(D.meta.personas),'personas'],[fmt(D.meta.manzanos),'manzanos'],[D.meta.cobertura+'%','con ficha completa']]
+  .map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+function drawBiz(){
+  $('biz').innerHTML = Object.entries(PROFILES).map(([k,p])=>`<button type="button" data-k="${k}" aria-pressed="${k===biz}">${p.n}</button>`).join('');
+  [...$('biz').children].forEach(b=>b.onclick=()=>{biz=b.dataset.k; drawBiz(); drawWeights(); refresh();});
+}
+function drawWeights(){
+  const p = PROFILES[biz];
+  $('weights').innerHTML = p.v.map(([k,w,inv],j)=>`<div class="wl"><label for="w${j}">${VARS[k].l}${inv?' <small>(menos es mejor)</small>':''}</label><input type="range" id="w${j}" min="0" max="50" value="${w}"><span class="n" id="wn${j}">${w}</span></div>`).join('');
+  p.v.forEach((v,j)=>{ $('w'+j).oninput=e=>{ v[1]=+e.target.value; $('wn'+j).textContent=v[1]; SCORES[biz]=scoreProfile(p); OPP[biz]=oppFor(biz); refresh(); }; });
+}
+$('reset').onclick=()=>{ PROFILES[biz].v = JSON.parse(JSON.stringify(DEFAULTS[biz].v)); SCORES[biz]=scoreProfile(PROFILES[biz]); OPP[biz]=oppFor(biz); drawWeights(); refresh(); };
+
+function drawRank(){
+  const p=PROFILES[biz]; $('rankh').textContent = 'Mejores 10 zonas para '+p.n.toLowerCase()+' (por oportunidad)';
+  const top = HEX.map(h=>({h,s:OPP[biz][h.i]})).sort((a,b)=>b.s-a.s || b.h.o.personas-a.h.o.personas).slice(0,10);
+  $('rank').innerHTML = top.map(({h,s})=>{
+    const strong = p.v.filter(v=>v[1]>0).map(([k,w,inv])=>({k,c:w*(inv?1-RANK[k][h.i]:RANK[k][h.i])})).sort((a,b)=>b.c-a.c).slice(0,2).map(x=>VARS[x.k].l.replace(/^% /,'').toLowerCase());
+    return `<li tabindex="0"><div class="d">${placeTxt(h.n)}<small>${COMP[biz][h.i].n===0?'Sin competencia a 800 m':COMP[biz][h.i].n+(COMP[biz][h.i].n===1?' competidor':' competidores')+' a 800 m'} · fuerte en ${strong.join(' y ')}</small></div><span class="s">${s}</span></li>`; }).join('');
+  [...$('rank').children].forEach((li,i)=>{ const go=()=>{ const h=top[i].h; map.flyToBounds(h.lyr.getBounds(),{maxZoom:14.5,duration:.6}); pin(h); };
+    li.onclick=go; li.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } }; });
+  return top[0].h;
+}
+function refresh(){ styleAll(); drawComp(); const best=drawRank(); if(pinned) show(pinned); else if(shown) show(shown); else show(best); }
+
+$('m-opp').onclick=()=>setMode('opp'); $('m-comp').onclick=()=>setMode('comp'); $('m-score').onclick=()=>setMode('score'); $('m-ind').onclick=()=>setMode('ind'); $('m-heat').onclick=()=>setMode('heat');
+$('indvar').onchange=styleAll; $('heatvar').onchange=drawHeat;
+const retheme=()=>{ styleAll(); drawComp(); };
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',retheme);
+new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+const BAR = {}; D.barrios.forEach(([i,la,lo])=>{ const k=NM[i]; (BAR[k]=BAR[k]||[]).push([la,lo]); });
+const BNAMES = Object.keys(BAR).sort((a,b)=>a.localeCompare(b,'es'));
+$('qlist').innerHTML = BNAMES.map(n=>`<option value="${n.replace(/"/g,'&quot;')}"></option>`).join('');
+const norm = t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+function goBarrio(){
+  const q=norm($('q').value); if(!q){ $('qmsg').textContent=''; return; }
+  const name = BNAMES.find(n=>norm(n)===q) || BNAMES.find(n=>norm(n).startsWith(q)) || BNAMES.find(n=>norm(n).includes(q));
+  if(!name){ $('qmsg').textContent='No encontré ese barrio. Prueba con otra parte del nombre.'; return; }
+  const ps = BAR[name], [la,lo] = ps[0];
+  $('qmsg').textContent = ps.length>1 ? `${name}: hay ${ps.length} barrios con ese nombre, te muestro el primero.` : name;
+  map.flyTo([la,lo],15.75,{duration:.7});
+  let best=null, bd=1e9; HEX.forEach(h=>{ const c=h.lyr.getBounds().getCenter(), d=(c.lat-la)**2+(c.lng-lo)**2; if(d<bd){bd=d;best=h;} });
+  if(best) pin(best);
+}
+$('q').addEventListener('change',goBarrio);
+$('q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); goBarrio(); } });
+
+$('wc').oninput=e=>{ WC=e.target.value/100; $('wcn').textContent=e.target.value+'%'; recomputeOpp(); refresh(); };
+$('showc').onchange=drawComp;
+drawBiz(); drawWeights(); setMode('opp'); refresh(); drawLabels();
+</script>
