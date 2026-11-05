@@ -192,7 +192,7 @@ $('gps').onclick=()=>{
   }, err=>{ $('gps').disabled=false;
     msg(err.code===1 ? (STANDALONE ? 'No diste permiso para usar tu ubicación. Toca el mapa o escribe tu barrio.' : 'Aquí no puedo leer tu ubicación. Toca el mapa o escribe tu barrio; en la versión pública del mapa, el botón usa el GPS del celular.')
       : 'No pude obtener tu ubicación. Toca el mapa o escribe tu barrio.', true);
-  }, {enableHighAccuracy:true, timeout:12000, maximumAge:60000});
+  }, {enableHighAccuracy:true, timeout:12000, maximumAge:0});
 };
 function goSearch(){
   if(!D) return; const raw=$('q').value, q=norm(raw.split(' · ')[0]); if(!q) return;
