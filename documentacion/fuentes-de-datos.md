@@ -61,7 +61,7 @@ Desde junio de 2026 Overpass responde casi siempre con errores 406 o 504, y sus 
 
 `python codigo/dep_0_capas_pbf.py Cochabamba bolivia-latest.osm.pbf`
 
-El script agrega al extracto departamental estas capas (conteos en Cochabamba con datos al 12 de noviembre de 2026):
+Desde el 13 de noviembre de 2026 todas las capas de negocios y referencias de las apps salen de este extracto (datos al 12 de noviembre). El script reemplaza en el extracto departamental los diez rubros de la tabla de arriba (mismas etiquetas) y las referencias del mapa (mercados `amenity=marketplace`, universidades `amenity=university|college`, terminales `amenity=bus_station` o `public_transport=station`, plazas `place=square` o parques con nombre de plaza, bancos `amenity=bank`, supermercados `shop=supermarket`), y agrega estas capas (conteos en Cochabamba con datos al 12 de noviembre de 2026):
 
 | Capa | Etiquetas OSM | Cochabamba |
 | --- | --- | --- |
@@ -74,7 +74,7 @@ El script agrega al extracto departamental estas capas (conteos en Cochabamba co
 | Centros de salud (`centro_salud`) | nombre con "Centro de Salud" o "C.S.", y el resto de establecimientos de salud | 162 |
 | Postas de salud (`posta`) | nombre con "Posta", "Puesto de Salud" o "P.S." | 37 |
 
-También actualiza las referencias `hospital` (todos los establecimientos de salud con nombre, 295) y `escuela` (1.228). Muchos puestos de salud están etiquetados como hospital en OSM: por eso la clasificación usa primero el nombre. Las postas rurales están poco mapeadas, así que su número real es bastante mayor.
+Las referencias quedan así: 130 mercados, 296 establecimientos de salud, 126 universidades e institutos, 84 terminales, 538 plazas, 1.229 colegios, 212 bancos y 95 supermercados. Las calles, barrios y el mapa base siguen siendo los del 28 y 29 de octubre. Muchos puestos de salud están etiquetados como hospital en OSM: por eso la clasificación usa primero el nombre. Las postas rurales están poco mapeadas, así que su número real es bastante mayor.
 
 ## Alternativas para negocios
 

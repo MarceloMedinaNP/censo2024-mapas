@@ -4,8 +4,10 @@ Overpass rechaza a menudo las consultas (errores 406 y 504 desde junio de 2026).
 extracto diario de Bolivia de Geofabrik (bolivia-latest.osm.pbf, ~170 MB) y agrega al extracto
 departamental datos_osm/<dep>/osm_<dep>.json:
 
-  comp: cajero, gasolinera, gomeria, restaurante, hotel, hospital_clinica, centro_salud, posta
-  lm:   hospital (todos los establecimientos de salud) y escuela (colegios), actualizados
+  comp: los 10 rubros de negocios (farmacia ... taller) y cajero, gasolinera, gomeria, restaurante,
+        hotel, hospital_clinica, centro_salud, posta
+  lm:   referencias del mapa: mercado, hospital (todos los establecimientos de salud), universidad,
+        terminal, plaza, escuela, banco, supermercado
 
 Solo guarda los puntos que caen dentro del rectángulo de algún municipio del departamento.
 Uso: python codigo/dep_0_capas_pbf.py Cochabamba ruta/a/bolivia-latest.osm.pbf
@@ -37,6 +39,22 @@ def clasificar(t):
     """Devuelve (capas de comp, capas de lm) para un objeto con etiquetas t."""
     a, nm = t.get('amenity', ''), t.get('name', '')
     comp, lm = [], []
+    sh, le, cr = t.get('shop', ''), t.get('leisure', ''), t.get('craft', '')
+    for k, ok in (('farmacia', a == 'pharmacy'), ('gimnasio', le == 'fitness_centre'),
+                  ('peluqueria', sh in ('hairdresser', 'beauty')), ('libreria', sh in ('books', 'stationery')),
+                  ('guarderia', a in ('kindergarten', 'childcare')), ('ferreteria', sh in ('hardware', 'doityourself')),
+                  ('lavanderia', sh in ('laundry', 'dry_cleaning')), ('veterinaria', a == 'veterinary' or sh == 'pet'),
+                  ('dentista', a == 'dentist' or t.get('healthcare') == 'dentist'),
+                  ('taller', sh in ('car_repair', 'tyres', 'car_parts') or cr == 'mechanic')):
+        if ok: comp.append(k)
+    if a == 'marketplace': lm.append('mercado')
+    if a in ('university', 'college'): lm.append('universidad')
+    if a == 'bus_station' or (t.get('public_transport') == 'station' and t.get('railway') is None):
+        lm.append('terminal')
+    if t.get('place') == 'square' or (nm and re.match(r'plaz(a|uela)\b', nm, re.I) and le == 'park'):
+        lm.append('plaza')
+    if a == 'bank': lm.append('banco')
+    if sh == 'supermarket': lm.append('supermercado')
     if a == 'atm' or (a == 'bank' and t.get('atm') == 'yes'): comp.append('cajero')
     if a == 'fuel': comp.append('gasolinera')
     if t.get('shop') == 'tyres' or t.get('craft') == 'tyre' or (nm and GOMERIA.search(nm)): comp.append('gomeria')
@@ -84,6 +102,13 @@ class H(osmium.SimpleHandler):
         pts = [(nd.lat, nd.lon) for nd in w.nodes if nd.location.valid()]
         if pts: self.add('w' + str(w.id), sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts), t)
 
+    def area(self, ar):
+        if ar.from_way() or not ar.tags: return  # las vías cerradas ya se cuentan en way()
+        t = dict(ar.tags)
+        if not any(clasificar(t)): return
+        pts = [(n.lat, n.lon) for ring in ar.outer_rings() for n in ring if n.location.valid()]
+        if pts: self.add('r' + str(ar.orig_id()), sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts), t)
+
 
 h = H()
 h.apply_file(PBF, locations=True)
@@ -91,7 +116,7 @@ osm = json.load(open(F))
 for k, v in sorted(h.comp.items()):
     osm['comp'][k] = v
     print(f'comp {k:18s} {len(v):5d}')
-for k in ('hospital', 'escuela'):
+for k in ('mercado', 'hospital', 'universidad', 'terminal', 'plaza', 'escuela', 'banco', 'supermercado'):
     v = [p for p in h.lm.get(k, []) if p[0]]  # las referencias del mapa necesitan nombre
     print(f'lm   {k:18s} {len(osm["lm"].get(k, [])):5d} -> {len(v):5d}')
     osm['lm'][k] = v
