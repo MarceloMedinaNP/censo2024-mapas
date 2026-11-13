@@ -55,6 +55,27 @@ El archivo se descarga desde el navegador y se adjunta al chat: es la única for
 
 Se descargó con una consulta por municipio (las 28 más pequeñas agrupadas de a 6). En los municipios de más de 0,04 grados² se omitieron bosques, cultivos y arroyos para no superar los límites del servidor. Simplificación: 3 m en calles, 5 m en agua y ríos, 12 m en bosques y cultivos; se descartan áreas verdes de menos de 300 m² y bosques o cultivos de menos de 3.000 m². El paso `dep_3_preparar_web.py` lo recorta por municipio (`*.base.json`). La versión pública usa teselas de OpenStreetMap en su lugar.
 
+### Extracto de Geofabrik (13 de noviembre de 2026)
+
+Desde junio de 2026 Overpass responde casi siempre con errores 406 o 504, y sus administradores bloquean más rápido a quien insiste. La alternativa estable es el extracto diario de Bolivia de Geofabrik: `https://download.geofabrik.de/south-america/bolivia-latest.osm.pbf` (unos 170 MB, datos al día anterior). Se descarga desde Chrome a la carpeta Descargas, se pasa al espacio de trabajo y se procesa con `pyosmium`:
+
+`python codigo/dep_0_capas_pbf.py Cochabamba bolivia-latest.osm.pbf`
+
+El script agrega al extracto departamental estas capas (conteos en Cochabamba con datos al 12 de noviembre de 2026):
+
+| Capa | Etiquetas OSM | Cochabamba |
+| --- | --- | --- |
+| Cajeros automáticos (`cajero`) | `amenity=atm`; `amenity=bank` con `atm=yes` | 379 |
+| Gasolineras (`gasolinera`) | `amenity=fuel` | 144 |
+| Gomerías y llanterías (`gomeria`) | `shop=tyres`, `craft=tyre`, o nombre con gomería, llantería o vulcanizadora | 94 |
+| Restaurantes (`restaurante`) | `amenity=restaurant\|fast_food` | 1.248 |
+| Hoteles y alojamientos (`hotel`) | `tourism=hotel\|hostel\|motel\|guest_house`, o nombre que empieza con Alojamiento, Hostal, Hotel o Residencial | 262 |
+| Hospitales y clínicas (`hospital_clinica`) | `amenity=hospital\|clinic` o `healthcare=*`, clasificados por nombre | 115 |
+| Centros de salud (`centro_salud`) | nombre con "Centro de Salud" o "C.S.", y el resto de establecimientos de salud | 162 |
+| Postas de salud (`posta`) | nombre con "Posta", "Puesto de Salud" o "P.S." | 37 |
+
+También actualiza las referencias `hospital` (todos los establecimientos de salud con nombre, 295) y `escuela` (1.228). Muchos puestos de salud están etiquetados como hospital en OSM: por eso la clasificación usa primero el nombre. Las postas rurales están poco mapeadas, así que su número real es bastante mayor.
+
 ## Alternativas para negocios
 
 - **Google Places API**: mucho más completa que OSM, pero cobra por consulta y sus condiciones limitan guardar los datos.

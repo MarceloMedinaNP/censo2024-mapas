@@ -138,7 +138,7 @@ APPS = [
      f'Atlas del Censo 2024 para los municipios de {DEP}: población, educación, salud, vivienda y servicios básicos por barrio, zona, calle y manzano.'),
     ('cerca', 'Qué hay cerca', '_css_cerca.txt', '_cuerpo_cerca.html',
      {'departamento': DEP},
-     f'Encuentra la farmacia, el taller, la veterinaria o el centro de salud más cercano en {DEP}, con datos de OpenStreetMap.'),
+     f'Encuentra la farmacia, el cajero, la gasolinera, el centro de salud o el restaurante más cercano en {DEP}, con datos de OpenStreetMap.'),
 ]
 for slug, title, css_f, body_f, indice, desc in APPS:
     if not (C / body_f).exists(): continue

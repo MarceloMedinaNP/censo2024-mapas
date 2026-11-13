@@ -1218,7 +1218,7 @@ function highlight(it){
 
 // ---------- Ficha ----------
 const SVC = [['hospital','Centros de salud y hospitales'],['farmacia','Farmacias'],['escuela','Unidades educativas'],['guarderia','Guarderías y kínderes'],
-  ['universidad','Universidades e institutos'],['mercado','Mercados'],['supermercado','Supermercados'],['banco','Bancos'],['plaza','Plazas'],['terminal','Terminales']];
+  ['universidad','Universidades e institutos'],['mercado','Mercados'],['supermercado','Supermercados'],['banco','Bancos'],['cajero','Cajeros automáticos'],['gasolinera','Gasolineras'],['plaza','Plazas'],['terminal','Terminales']];
 function pyramid(o){
   const B=[['60omas','60+'],['40a59','40–59'],['20a39','20–39'],['0a19','0–19']];
   const tot = sumk(o,AGE_ALL)||1; const mx = Math.max(...B.flatMap(([b])=>[o['e'+b+'_h'],o['e'+b+'_m']]))/tot||1;

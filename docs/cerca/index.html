@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Encuentra la farmacia, el taller, la veterinaria o el centro de salud más cercano en Cochabamba, con datos de OpenStreetMap.">
+<meta name="description" content="Encuentra la farmacia, el cajero, la gasolinera, el centro de salud o el restaurante más cercano en Cochabamba, con datos de OpenStreetMap.">
 <style>body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px}[hidden]{display:none!important}</style>
 <title>Qué hay cerca</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -921,14 +921,14 @@ const mins = m => { if(m>2500){ const t=Math.max(5,Math.round(m*1.3/400/5)*5); r
 
 // g: género del plural (para "más cercanos/as")
 const CATS = [
-  ['farmacia','Farmacia','Farmacias','Farmacia'],['hospital','Centro de salud','Centros de salud y hospitales','Centro de salud'],['dentista','Dentista','Consultorios dentales','Consultorio dental'],
+  ['farmacia','Farmacia','Farmacias','Farmacia'],['hospital_clinica','Hospital o clínica','Hospitales y clínicas','Hospital o clínica'],['centro_salud','Centro de salud','Centros de salud','Centro de salud'],['posta','Posta de salud','Postas de salud','Posta de salud'],['dentista','Dentista','Consultorios dentales','Consultorio dental'],
   ['veterinaria','Veterinaria','Veterinarias y tiendas de mascotas','Veterinaria'],['taller','Taller mecánico','Talleres mecánicos y repuestos','Taller mecánico'],['ferreteria','Ferretería','Ferreterías','Ferretería'],
-  ['mercado','Mercado','Mercados y ferias','Mercado'],['supermercado','Supermercado','Supermercados','Supermercado'],['banco','Banco','Bancos','Banco'],
+  ['mercado','Mercado','Mercados y ferias','Mercado'],['supermercado','Supermercado','Supermercados','Supermercado'],['banco','Banco','Bancos','Banco'],['cajero','Cajero automático','Cajeros automáticos','Cajero automático'],['gasolinera','Gasolinera','Gasolineras','Gasolinera'],['gomeria','Gomería','Gomerías y llanterías','Gomería'],['restaurante','Restaurante','Restaurantes y comida rápida','Restaurante'],['hotel','Hotel o alojamiento','Hoteles y alojamientos','Alojamiento'],
   ['peluqueria','Peluquería','Peluquerías y salones de belleza','Peluquería'],['lavanderia','Lavandería','Lavanderías','Lavandería'],['gimnasio','Gimnasio','Gimnasios','Gimnasio'],
   ['libreria','Librería','Librerías y papelerías','Librería'],['guarderia','Guardería','Guarderías y kínderes','Guardería'],['escuela','Unidad educativa','Unidades educativas','Unidad educativa'],
   ['universidad','Universidad','Universidades e institutos','Universidad'],['terminal','Terminal','Terminales y paradas','Terminal'],['plaza','Plaza','Plazas','Plaza'],
 ];
-const FEM = new Set(['farmacia','veterinaria','ferreteria','peluqueria','lavanderia','libreria','guarderia','escuela','universidad','terminal','plaza']);
+const FEM = new Set(['posta','gasolinera','gomeria','farmacia','veterinaria','ferreteria','peluqueria','lavanderia','libreria','guarderia','escuela','universidad','terminal','plaza']);
 const CB = Object.fromEntries(CATS.map(c=>[c[0],{s:c[1],p:c[2],one:c[3],f:FEM.has(c[0])}]));
 let D=null, cat='farmacia', ME=[-17.3935,-66.157], NEAR=[], sel=-1, meSource='default';
 

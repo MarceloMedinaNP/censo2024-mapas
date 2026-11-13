@@ -11,7 +11,7 @@ Actualizado: 29 de octubre de 2026 · Responsable: Marcelo (ThinkingIA)
 | Mapa "Oportunidades Cochabamba": 47 municipios, por zona, tramo de calle y manzano; 10 rubros; recorrido guiado, chat "Pregúntale al mapa" y mapa base dibujado (ríos, lagunas, áreas verdes, cultivos, tren, cerros) | Versión 6 | https://claude.ai/artifact/Bj2BxLaru6nDurqkJc6FUa |
 | Versión pública del mapa (sin chat, con teselas de OpenStreetMap) | Publicada desde `docs/` del repositorio | https://marcelomedinanp.github.io/censo2024-mapas/ (ver `documentacion/guia-de-uso.md`) |
 | Atlas municipal para instituciones: brechas de agua, alcantarillado, salud, educación y vivienda por barrio, zona, calle y manzano; ficha completa frente al municipio y al departamento; población y servicios en un radio de 500 m a 2 km; descarga en CSV | Versión 1 | https://claude.ai/artifact/GdZiYtT57Y9XVEPuZuQ8ZX · pública: https://marcelomedinanp.github.io/censo2024-mapas/atlas/ |
-| Buscador cercano para el público: 18 tipos de servicios y negocios, ubicación por GPS (versión pública), toque en el mapa o búsqueda de barrio o calle; los 10 más cercanos con distancia y "Cómo llegar" | Versión 1 | https://claude.ai/artifact/5MZ3pJeBmExrn1kHrif1QB · pública: https://marcelomedinanp.github.io/censo2024-mapas/cerca/ |
+| Buscador cercano para el público: 25 tipos de servicios y negocios (incluye cajeros, gasolineras, gomerías, restaurantes, hoteles y salud separada en hospitales, centros de salud y postas), ubicación por GPS (versión pública), toque en el mapa o búsqueda de barrio o calle; los 10 más cercanos con distancia y "Cómo llegar" | Versión 1 | https://claude.ai/artifact/5MZ3pJeBmExrn1kHrif1QB · pública: https://marcelomedinanp.github.io/censo2024-mapas/cerca/ |
 | Mapa "Dónde abrir en Cochabamba" (solo municipio de Cochabamba, primera versión) | Versión 5 | https://claude.ai/artifact/5WmMDo4ZkLD6c3tQXSZVfD |
 | Prompt maestro para replicarlo en otra ciudad o rubro | Versión 1 | https://claude.ai/artifact/6HULaFQTyjyxaC6fvrasit (copia en `documentacion/prompt-maestro.md`) |
 | Repositorio con código, datos procesados y mapa | Al día | https://github.com/MarceloMedinaNP/censo2024-mapas |
@@ -36,6 +36,8 @@ Actualizado: 29 de octubre de 2026 · Responsable: Marcelo (ThinkingIA)
    - `python codigo/construir_plantilla.py` → arma la plantilla del mapa.
    - `python codigo/dep_3_preparar_web.py Cochabamba` → versión para Claude en `salida/cochabamba/web/` y versión pública en `salida/cochabamba/publico/`.
    - `python codigo/dep_4_apps.py Cochabamba` → Atlas municipal y Buscador cercano (`salida/cochabamba/atlas/`, `salida/cochabamba/cerca/` y sus versiones públicas en `publico/atlas/` y `publico/cerca/`), más `cerca.json` y `<municipio>.vias.json`.
+
+Las capas de servicios (cajeros, gasolineras, salud, etc.) salen del extracto de Geofabrik con `python codigo/dep_0_capas_pbf.py <Departamento> bolivia-latest.osm.pbf`, ver `fuentes-de-datos.md`.
 
 Para otro departamento hace falta su extracto de OpenStreetMap: se genera en el navegador integrado de la app (consultas en `fuentes-de-datos.md`), se descarga y se adjunta al chat. Es el único paso manual.
 
