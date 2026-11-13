@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Marcelo Medina · Datos e IA</title>
+<meta name="description" content="Marcelo Medina, analista de datos y BI en Cochabamba, Bolivia. Mapas del Censo 2024, dashboards y redes.">
+<meta property="og:title" content="Marcelo Medina · Datos e IA">
+<meta property="og:description" content="Mapas del Censo 2024, dashboards de datos de Bolivia y Latinoamérica, y dónde encontrarme.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f2; --panel:#fff; --fg:#1b2420; --muted:#5d6b64; --line:#dde3de;
+  --accent:#0f7a54; --accent-soft:#e2f1ea;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-data:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#111614; --panel:#171e1b; --fg:#e4ebe7; --muted:#97a69e; --line:#2a3430;
+  --accent:#3fc08c; --accent-soft:#1b3328; color-scheme:dark}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding:max(28px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(36px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
+main{max-width:520px;margin:0 auto}
+header{text-align:center;margin-bottom:26px}
+.av{width:84px;height:84px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;
+  background:var(--accent);color:var(--panel);font-family:var(--f-display);font-weight:800;font-size:30px;letter-spacing:.02em}
+h1{font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1.15;margin:0}
+.role{color:var(--muted);margin:6px 0 0}
+.tag{display:inline-block;margin-top:12px;font-family:var(--f-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:99px}
+h2{font-family:var(--f-data);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:28px 0 10px 4px}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+a.card{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
+a.card:hover,a.card:focus-visible{border-color:var(--accent);transform:translateY(-1px)}
+a.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ic{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tx{min-width:0;flex:1}
+.tx b{display:block;font-weight:600}
+.tx small{display:block;color:var(--muted);font-size:13px;line-height:1.35}
+.go{flex:none;color:var(--muted)}
+.go svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+a.card.hl{border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.grid a.card{padding:12px 14px}
+.grid .ic{width:32px;height:32px;border-radius:8px;font-family:var(--f-display);font-weight:800;font-size:14px}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:32px}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="av" aria-hidden="true">MM</div>
+    <h1>Marcelo Medina</h1>
+    <p class="role">Analista de datos y BI · Cofundador de ThinkingIA</p>
+    <span class="tag">Datos e IA · Cochabamba, Bolivia</span>
+  </header>
+
+  <h2>Mapas del Censo 2024</h2>
+  <ul>
+    <li><a class="card hl" href="https://marcelomedinanp.github.io/censo2024-mapas/cerca/">
+      <span class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+      <span class="tx"><b>¿Qué hay cerca?</b><small>Farmacias, cajeros, gasolineras, centros de salud y 21 servicios más cerca de ti</small></span>
+      <span class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+    <li><a class="card" href="https://marcelomedinanp.github.io/censo2024-mapas/">
+      <span class="ic"><svg viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M6 20V10"/><path d="M11 20V5"/><path d="M16 20v-7"/><path d="M21 20V8"/></svg></span>
+      <span class="tx"><b>Dónde abrir un negocio</b><small>Oportunidades por zona y calle en los 47 municipios de Cochabamba</small></span>
+      <span class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+    <li><a class="card" href="https://marcelomedinanp.github.io/censo2024-mapas/atlas/">
+      <span class="ic"><svg viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14"/><path d="M15 6v14"/></svg></span>
+      <span class="tx"><b>Atlas municipal</b><small>Agua, salud, educación y vivienda por barrio, calle y manzano</small></span>
+      <span class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+  </ul>
+
+  <h2>Dashboards</h2>
+  <ul>
+    <li><a class="card" href="https://marcelomedinanp.github.io/emigracion-boliviana-destinos/">
+      <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg></span>
+      <span class="tx"><b>¿A dónde emigran los bolivianos?</b><small>Destinos de la emigración boliviana, 1990–2024</small></span>
+      <span class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+    <li><a class="card" href="https://marcelomedinanp.github.io/participacion-laboral-femenina-latam/">
+      <span class="ic"><svg viewBox="0 0 24 24"><path d="M4 19l5-6 4 3 7-9"/><path d="M15 7h5v5"/></svg></span>
+      <span class="tx"><b>Mujeres y mercado laboral</b><small>Participación laboral femenina en Latinoamérica, 1990–2025</small></span>
+      <span class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+    <li><a class="card" href="https://datascienceportfol.io/marcelomedinanp">
+      <span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 14h3"/></svg></span>
+      <span class="tx"><b>Portafolio completo</b><small>Todos mis proyectos de datos</small></span>
+      <span class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+  </ul>
+
+  <h2>Encuéntrame en</h2>
+  <div class="grid">
+    <a class="card" href="https://www.linkedin.com/in/marcelomedinanp"><span class="ic" aria-hidden="true">in</span><span class="tx"><b>LinkedIn</b></span></a>
+    <a class="card" href="https://x.com/marcelomedinanp"><span class="ic" aria-hidden="true">X</span><span class="tx"><b>X</b></span></a>
+    <a class="card" href="https://www.facebook.com/marcelomedinanp"><span class="ic" aria-hidden="true">f</span><span class="tx"><b>Facebook</b></span></a>
+    <a class="card" href="https://www.instagram.com/marcelomedinanp"><span class="ic" aria-hidden="true">ig</span><span class="tx"><b>Instagram</b></span></a>
+    <a class="card" href="https://www.tiktok.com/@marcelomedinanp"><span class="ic" aria-hidden="true">tt</span><span class="tx"><b>TikTok</b></span></a>
+    <a class="card" href="https://github.com/MarceloMedinaNP"><span class="ic" aria-hidden="true">gh</span><span class="tx"><b>GitHub</b></span></a>
+  </div>
+
+  <footer>Datos del Censo 2024 (INE) y OpenStreetMap</footer>
+</main>
+</body>
+</html>
